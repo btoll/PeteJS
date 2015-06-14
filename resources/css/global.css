@@ -1,0 +1,175 @@
+body, div, h1, pre, code {
+  font-family: "Trebuchet MS";
+  margin: 0;
+  padding: 0;
+}
+/*********************************************/
+/************* 3-column  layout *************/
+/*********************************************/
+body {
+  min-width: 630px; /* 2x LC width + RC width */
+}
+#header {
+  background: #B0C4DE;
+  border-bottom: 2px solid #CCC;
+  height: 65px;
+  padding: 10px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+}
+#header p {
+  font: normal 28px monospace;
+  margin: 18px;
+  padding: 0;
+}
+/**********search form***********/
+#searchForm {
+  background: #F4F4F4;
+  border: 1px dashed #CCC;
+  font: 14px Arial;
+  margin: 0;
+  padding: 10px;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+}
+#searchList {
+  list-style: circle;
+  margin: 5px 0 0 20px;
+  padding: 0;
+}
+#searchList li.disabled {
+  list-style: none;
+}
+#tree {
+  background: #FFF;
+  list-style: none;
+  margin: 0;
+  min-height: 500px;
+  padding: 10px 5px 0;
+  position: absolute;
+  top: 100px;
+  left: 5px;
+  width: 180px; /* LC width */
+}
+#container {
+  margin-top: 100px;
+  overflow: hidden;
+  padding-left: 180px; /* LC width */
+  padding-right: 190px; /* RC width */
+}
+#container .column {
+  float: left;
+  padding-bottom: 20010px;  /* X + padding-bottom */
+  margin-bottom: -20000px;  /* X */
+  position: relative;
+}
+#pane {
+  background: #FFF;
+  width: 99%;
+}
+#searchPane {
+  margin-top: 20px;
+  position: fixed;
+  top: 100px;
+  right: 8px;
+  width: 190px; /* RC width */
+}
+/*********************************************/
+code {
+  color: #666;
+}
+a {
+  color: #CD5C5C;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+#tree ul {
+  margin: 0 0 0 25px;
+  padding: 0;
+}
+#tree li li a, #searchList li li a {
+  font: 11px Arial, Helvetica, sans-serif;
+}
+#tree a, #searchList a {
+  font: 13px "Trebuchet MS";
+}
+#response {
+  padding: 15px;
+}
+/**********end sliding doors***********/
+div#description,
+div#source,
+div#example {
+  background: #F4F4F4;
+  border: 1px solid #999;
+  border-top: 0;
+  margin: 0;
+  overflow: auto;
+  padding: 1px 10px 10px;
+}
+div#description h1 {
+  background: #FFF;
+  border: 1px dashed #CCC;
+  color: #777;
+  font: 16px "Trebuchet MS";
+  line-height: 1; /*fixes peek-a-boo bug in ie6*/
+  margin: 20px 10px;
+  padding: 10px;
+  /*text-align: left;*/
+}
+div#description h4 {
+  margin: 10px 0 0 10px;
+  /*padding: 0;*/
+}
+div#description ul,
+div#description p {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+div#description li {
+  font: normal 12px Arial, Helvetica, sans-serif;
+  list-style: circle;
+}
+div#description #details { /*targets the "Details" title*/
+  border-top: 2px dotted #666;
+  /*margin-top: 10px;*/
+  padding-top: 10px;
+}
+div#description div.describe,
+div#example div.describe { /*the element that wraps the @describe description from the source code*/
+  font: normal 12px Arial, Helvetica, sans-serif;
+  margin: 0 0 0 20px;
+  padding: 10px;
+}
+div#description div.describe p {
+  margin: 10px 0;
+}
+div#source {
+  font: 12px Arial, serif;
+}
+/********************* search form and list *********************/
+/*********************classes and misc*********************/
+.deprecated { color: red !important; }
+.expand {
+  background: url(../images/plus.gif) 0 50% no-repeat;
+  padding: 0 0 0 20px;
+}
+.contract {
+  background: url(../images/minus.gif) 0 50% no-repeat;
+  padding: 0 0 0 20px;
+}
+.selected {
+  background: #FFF;
+  border: 1px solid #CCC;
+  color: #789;
+}
+#title { /*the "page" title*/
+  margin: 0 0 20px 0;
+  padding: 0;
+}

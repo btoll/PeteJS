@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>PeteJS JavaScript Library</title>
+<link rel="stylesheet" type="text/css" href="../resources/css/global.css" />
+<link rel="stylesheet" type="text/css" href="../resources/css/pete.css" />
+<!--[if lte IE 7]>
+<style type="text/css">
+#header,
+#searchForm,
+#tree,
+#searchPane {
+  position: absolute;
+}
+.Pete_Tabs ol {
+  margin-bottom: -20px;
+}
+</style>
+<![endif]-->
+</head>
+
+<body>
+
+  <div id="header">
+    <p>&lt;PeteJS version=&quot;1.0.0&quot;&gt;</p>
+    <form method="get" id="searchForm">
+      <label for="search">Search PeteJS</label> <input type="text" id="search" class="required" />
+      <select id="searchBy">
+        <option value="method">Method</option>
+        <option value="source">Source</option>
+      </select>
+      <input type="submit" id="go" value="Search" />
+    </form>
+  </div>
+
+  <ul id="tree" class="column">
+  </ul>
+
+  <div id="searchPane" class="column">
+    <ul id="searchList">
+      <li class="disabled">...search results...</li>
+    </ul>
+  </div>
+
+  <div id="container">
+    <div id="pane" class="column">
+      <div id="response" class="">
+        <h3 id="title">Choose a method from the tree.</h3>
+
+        <div class="Pete_Tabs">
+          <ol>
+            <li id="selected"><a href="#" rel="description">Description</a></li>
+            <li><a href="#" rel="source">Source</a></li>
+            <li><a href="#" rel="example">Example</a></li>
+          </ol>
+
+          <div id="description" class="Pete_Tab">
+          </div>
+
+          <div id="source" class="Pete_Tab hide">
+          </div>
+
+          <div id="example" class="Pete_Tab hide">
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="../src/Pete.prototype.js"></script>
+  <script type="text/javascript" src="../src/Pete.js"></script>
+  <script type="text/javascript" src="../src/Pete.Element.js"></script>
+  <script type="text/javascript" src="../src/Pete.Composite.js"></script>
+  <script type="text/javascript" src="../src/Pete.Observer.js"></script>
+  <script type="text/javascript" src="../src/Pete.Rules.js"></script>
+  <script type="text/javascript" src="../src/Pete.Template.js"></script>
+  <script type="text/javascript" src="../src/Pete.util.js"></script>
+  <script type="text/javascript" src="../src/Pete.dom.js"></script>
+  <script type="text/javascript" src="../src/Pete.domQuery.js"></script>
+  <script type="text/javascript" src="../src/Pete.ajax.js"></script>
+  <script type="text/javascript" src="../src/Pete.log.js"></script>
+  <script type="text/javascript" src="docs.js"></script>
+</body>
+</html>
