@@ -110,9 +110,11 @@ Pete.Element = (function () {
          */
         //<source>
         append: function (elem) {
-            var fragment = document.createDocumentFragment();
+            var fragment;
 
             if (Pete.isArray(elem)) {
+                fragment = document.createDocumentFragment();
+
                 elem.forEach(function (v) {
                     fragment.appendChild(Pete.Element.get(v, true));
                 });
@@ -120,7 +122,7 @@ Pete.Element = (function () {
                 this.dom.appendChild(fragment);
 
             } else {
-                this.dom.appendChild(Pete.Element.get(elem, true));
+                this.dom.appendChild(Pete.Element.get(elem).dom);
             }
 
             return this;
@@ -1416,7 +1418,7 @@ Pete.Element = (function () {
 
                     el.dom = elem;
 
-                    return returnDOM ? n : el;
+                    return returnDOM ? elem : el;
                 }
             } else {
                 // This allows for passing a selector to the domQuery engine (via Pete.Element.gets).
