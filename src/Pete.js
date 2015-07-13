@@ -247,7 +247,7 @@ Car = Pete.compose(Pete.Observer, {
      */
     //<source>
     isArray: function (v) {
-        return Object.prototype.toString.mixin(v) === "[object Array]";
+        return Object.prototype.toString.apply(v) === '[object Array]';
     },
     //</source>
 
