@@ -1,9 +1,16 @@
-What is PeteJS?
+PeteJS is all of the following things.
 
-PeteJS is a lightweight JavaScript library composed of intuitive and easy-to-use DOM manipulation methods and widgets that significantly reduces development and debugging time.
++ A dog.
+
++ A recursive acronym (`Pete for the Ethical Treatment of Everything`).
+
++ A JavaScript library that uses only prototypal inheritance and avoids any classical inheritance sugar.
 
 What browsers are supported?
-The current version of PeteJS supports FF 2+, Safari 2+, Opera 8+, Chrome 1+ and IE 6+.
++ Chrome, Firefox, Safari, Opera 12+ and IE 8+.
 
 What is the license?
-PeteJS is freely distributable under the terms of an MIT-style license.
++ PeteJS is [free][wtfpl].
+
+[wtfpl]: http://www.wtfpl.net/
+
