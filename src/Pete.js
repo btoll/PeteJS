@@ -206,26 +206,36 @@ Car = Pete.compose(Pete.Observer, {
 
         for (i = 0, len = args.length; i < len; i++) {
             switch (args[i]) {
-                case "cache":
+                case 'cache':
                     Pete.cache = {};
                     break;
 
-                case "disabled":
+                case 'disabled':
                     if (!Pete.isEmpty(Pete.disabled)) {
                       Pete.disabled = {};
                     }
                     break;
 
-                case "flyweight":
+                case 'flyweight':
                     flyweight = {};
                     break;
 
-                case "garbage":
+                case 'garbage':
                     Pete.garbage = {};
             }
         }
     },
     //</source>
+
+    getDom: function (el) {
+        if (!el) {
+            return;
+        }
+
+        return el.dom ?
+            el.dom :
+            typeof el === 'string' ? document.getElementById(el) : el;
+    },
 
     /**
      * @function Pete.id
@@ -262,7 +272,7 @@ Car = Pete.compose(Pete.Observer, {
         var empty = true,
             prop;
 
-        if (typeof v === "string" && v.length > 0 || typeof v === "number" && !isNaN(v) || v instanceof Array && v.length > 0 || v instanceof Date) {
+        if (typeof v === 'string' && v.length > 0 || typeof v === 'number' && !isNaN(v) || v instanceof Array && v.length > 0 || v instanceof Date) {
             empty = false;
         } else if (v instanceof Object) {
             for (prop in v) {
@@ -392,8 +402,7 @@ Car = Pete.compose(Pete.Observer, {
     //<source>
     trim: function (str) {
         var re = /^\s+|\s+$/g;
-        return str.replace(re, "");
-
+        return str.replace(re, '');
     }.assert(String),
     //</source>
 
@@ -412,7 +421,7 @@ Car = Pete.compose(Pete.Observer, {
 * @describe <p>Constant. The global symbol that is used in everything from the creation of unique <code><a href="#jsdoc">Pete.Element</a></code> ids to class names.</p>
 */
 //<source>
-Pete.globalSymbol = "Pete";
+Pete.globalSymbol = 'Pete';
 //</source>
 
 /**
@@ -422,8 +431,8 @@ Pete.globalSymbol = "Pete";
 */
 //<source>
 Pete.tabClasses = {
-  tabs: Pete.globalSymbol + "_Tabs", //the class name on the containing div;
-  tab: Pete.globalSymbol + "_Tab" //the class name for each tab;
+  tabs: Pete.globalSymbol + '_Tabs', //the class name on the containing div;
+  tab: Pete.globalSymbol + '_Tab' //the class name for each tab;
 };
 //</source>
 

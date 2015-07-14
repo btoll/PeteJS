@@ -1397,7 +1397,7 @@ Pete.Element = (function () {
                             el.dom = elem;
                         } else {
                             el = Pete.cache[elem.id] = Pete.compose(Pete.Element, {
-                                dom: elem
+                                dom: Pete.getDom(elem)
                             });
                         }
                     } else {
@@ -1407,12 +1407,15 @@ Pete.Element = (function () {
                         if ((el = Pete.cache[id])) {
                             el.dom = elem;
                         } else {
+                            elem = Pete.getDom(elem);
+
                             el = Pete.cache[id] = Pete.compose(Pete.Element, {
                                 dom: elem
                             });
 
-                            el.setId();
-                            el.dom.id = id;
+                            // TODO: setId just returns the id?!
+                            //el.setId();
+                            el.id = id;
                         }
                     }
 
@@ -1464,17 +1467,12 @@ Pete.Element = (function () {
             } else {
                 elems = (root || document).querySelectorAll(selector); //use the Selectors API, it's faster and returns a static nodelist;
             }
-            for (i = 0, len = elems.length; i < len; i++) {
-                elem = elems[i];
 
-                if (!elem.id) { //make sure that every element has an id (if not auto-generate one);
-                    elem.id = Pete.Element.setId();
-                }
+            for (i = 0, len = elems.length; i < len; i++) {
                 a.push(elems[i]);
             }
 
             return returnDOM ? a : Pete.Composite.init(a);
-
         }
         //</source>
     };
