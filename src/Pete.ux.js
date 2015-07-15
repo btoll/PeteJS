@@ -30,7 +30,6 @@ Pete.ux.DropZoneManager = (function () {
           ev, subscribe;
 
         if (!(v instanceof Array)) {
-        //if (v instanceof Pete.Composite) {
             if (v.elements.length > 0) {
                 elems = v.elements;
             } else {
@@ -38,10 +37,8 @@ Pete.ux.DropZoneManager = (function () {
             }
 
             elems.forEach(function (elem) {
-                var zone = dropZones[elem.id] = elem;
-
-                // Each zone mixes in its own Observer functionality.
-                Pete.mixin(zone, Pete.Observer);
+                var zone = Pete.Element.get(elem['pete_id']);
+                dropZones[zone.id] = zone;
 
                 // Let the Observer know what events can be subscribed to.
                 zone.subscriberEvents([
@@ -55,14 +52,13 @@ Pete.ux.DropZoneManager = (function () {
                     for (ev in subscribe) {
                         if (subscribe.hasOwnProperty(ev)) {
                             // W/o registering the event it can't be subscribed to.
-                            zone.subscriberEvents(ev);
                             zone.subscribe(ev, subscribe[ev]);
                         }
                     }
                 }
 
-                elem.sort = o.sort || false;
-                elem.snapToZone = o.snapToZone || false;
+                zone.sort = o.sort || false;
+                zone.snapToZone = o.snapToZone || false;
             });
         } else {
             dropZones.push(Pete.Element.get(v));
@@ -76,7 +72,7 @@ Pete.ux.DropZoneManager = (function () {
                 Pete.dom.find(target, '.Pete_draggable');
 
             if (target) {
-                target.owner = this.id;
+                target.owner = this['pete_id'];
 
                 // Clone the target node and any children.
                 dragSource = target.cloneNode(true);
@@ -110,8 +106,8 @@ Pete.ux.DropZoneManager = (function () {
 
         v.on('mouseover', function (e) {
             if (dragSource) {
-                if (sourceElement.owner !== this.id) {
-                    dropZoneTarget = this.id;
+                if (sourceElement.owner !== this['pete_id']) {
+                    dropZoneTarget = this['pete_id'];
                     Pete.Element.fly(dragSource).addClass('Pete_overDropZone');
                 }
             }
@@ -136,21 +132,21 @@ Pete.ux.DropZoneManager = (function () {
 
         // If dropZoneTarget is not null (from a no-drop area) or within the same drop zone.
         if (dropZoneTarget && dropZoneTarget.indexOf(sourceElement.owner) === -1) {
-            zoneTarget = $(dropZoneTarget);
+            //zoneTarget = $(dropZoneTarget);
+            zoneTarget = Pete.Element.get(dropZoneTarget, true);
 
             o = Pete.ux.DropZoneManager.getDropZones()[dropZoneTarget];
 
             if (o) {
                 if (o.id !== sourceElement.owner) {
-
                     // Drop the node in the drop zone if developer-provided callback doesn't cancel the behavior.
                     if (o.fire('beforenodedrop') !== false) {
                         // Remove the cloned node from the dom...
                         document.body.removeChild(dragSource);
                         // ...and re-append the original in the new drop zone.
-                        $(dropZoneTarget).appendChild(sourceElement);
+                        zoneTarget.appendChild(sourceElement);
                         // Swap out the previous zone owner for the new one.
-                        sourceElement.owner = o.id;
+                        sourceElement.owner = o['pete_id'];
 
                         if (o.sort) {
                             sort(dropZoneTarget);

@@ -26,7 +26,7 @@ Pete.Element = function (elem) {
 */
 //</source>
 
-Pete.Element = (function () {
+Pete.Element = Pete.compose(Pete.Observer, (function () {
     var re = /^[a-z]+[^+>=\s]+$/,
         reToken = /\{([a-z]+)\}/gi;
 
@@ -1357,6 +1357,9 @@ Pete.Element = (function () {
          */
         //<source>
         get: function (elem, root, returnDOM) {
+            // TODO: It looks like some elements are being cached by an id
+            // and others by a ref to itself.
+            // TODO: Revisit this entire method!
             var n, el, id;
 
             if (root && typeof root === 'boolean') {
@@ -1393,9 +1396,7 @@ Pete.Element = (function () {
                     // The element has an id so either get it from cache or create
                     // a new Element and add it to the cache.
                     if (elem.id) {
-                        if ((el = Pete.cache[elem.id])) {
-                            el.dom = elem;
-                        } else {
+                        if (!(el = Pete.cache[elem.id])) {
                             el = Pete.cache[elem.id] = Pete.compose(Pete.Element, {
                                 dom: Pete.getDom(elem)
                             });
@@ -1428,9 +1429,11 @@ Pete.Element = (function () {
                 // Pass along a third argument in case root is also passed.
                 //
                 // TODO: Using Element.get here causes a Too Much Recursion error.
-                el = Pete.cache[elem.id] = Pete.compose(Pete.Element, {
-                    dom: Pete.Element.gets(elem, root || true, true)[0]
-                });
+                if (!(el = Pete.cache[elem])) {
+                    el = Pete.cache[elem] = Pete.compose(Pete.Element, {
+                        dom: Pete.Element.gets(elem, root || true, true)[0]
+                    });
+                }
 
                 return returnDOM ? el.dom : el;
             }
@@ -1459,16 +1462,32 @@ Pete.Element = (function () {
 
             var elems,
                 a = [],
-                i, len, elem;
+                i, len, elem, el, id;
 
-            //some older browsers don't support the Selectors API and the Selectors API doesn't support negative attribute selectors, i.e. #myElem[class!=foo];
+            // Some older browsers don't support the Selectors API and the Selectors API doesn't support negative attribute selectors, i.e. #myElem[class!=foo].
             if (selector.indexOf('!') !== -1 || typeof document.querySelectorAll !== 'function') {
                 elems = Pete.domQuery.search(selector, root); //returns a live HTML collection;
             } else {
-                elems = (root || document).querySelectorAll(selector); //use the Selectors API, it's faster and returns a static nodelist;
+                // Use the Selectors API, it's faster and returns a static nodelist.
+                elems = (root || document).querySelectorAll(selector);
             }
 
             for (i = 0, len = elems.length; i < len; i++) {
+                elem = elems[i];
+
+                if (!elem['pete_id']) {
+                    id = elem.id || Pete.id();
+
+                    // Let's create a Pete.Element for every element found by the composite.
+                    el = Pete.compose(Pete.Element, {
+                        id: id,
+                        dom: elem
+                    });
+
+                    Pete.cache[id] = el;
+                    elem['pete_id'] = id;
+                }
+
                 a.push(elems[i]);
             }
 
@@ -1476,5 +1495,5 @@ Pete.Element = (function () {
         }
         //</source>
     };
-}());
+}()));
 
