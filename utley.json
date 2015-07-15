@@ -1,0 +1,25 @@
+{
+    "css": [{
+        "src": [
+            "resources/css"
+        ],
+        "output": "build/pete.css",
+        "version": "1.0.0"
+    }],
+
+    "js": [{
+        "src": [
+            "src"
+        ],
+        "output": "build/pete.js",
+        "version": "1.0.0",
+        "dependencies": [
+            "Pete.prototype.js",
+            "Pete.js",
+            "Pete.Observer.js",
+            "Pete.Element.js",
+            "Pete.Composite.js"
+        ]
+    }]
+}
+

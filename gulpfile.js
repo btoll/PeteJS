@@ -19,9 +19,9 @@ var gulp = require('gulp'),
     dependencies = [
         'Pete.prototype.js',
         'Pete.js',
+        'Pete.Observer.js',
         'Pete.Element.js',
-        'Pete.Composite.js',
-        'Pete.Observer.js'
+        'Pete.Composite.js'
     ],
 
     build_dir = argv.build_dir,
