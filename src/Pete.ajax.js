@@ -6,7 +6,7 @@
  * and GPL (GPL-LICENSE.txt) licenses.
  *
  */
-Pete.ajax = (function () {
+Pete.ajax = Pete.compose(Pete.Observer, (function () {
     /**
      * @property defaults
      * @type Object
@@ -28,6 +28,14 @@ Pete.ajax = (function () {
             async: true
         },
         //</source>
+
+        counter = (function () {
+            var n = 0;
+
+            return function () {
+                return n++;
+            };
+        }()),
 
         getXHR = function () {
             var factory = [
@@ -55,47 +63,6 @@ Pete.ajax = (function () {
             throw new Error('XMLHttpRequest object cannot be created.');
         },
 
-        sendRequest = function (xhr, options) {
-            // We're going to wait for a request for x seconds before giving up.
-            var timeoutLength = options.timeout;
-
-            // Initialize a callback which will fire x seconds from now, canceling the request if it has not already occurred.
-            setTimeout(function () {
-                if (xhr) {
-                    xhr.abort();
-                    options.abort();
-                }
-            }, timeoutLength);
-
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    if (httpSuccess(xhr)) {
-                        options.success(httpData(xhr, options));
-                    } else {
-                        options.error();
-                    }
-
-                    options.complete();
-
-                    // Clean up after ourselves to avoid memory leaks.
-                    xhr = null;
-                }
-            };
-
-            if (options.type === 'HEAD') {
-                xhr.open(options.type, options.url);
-            } else {
-                xhr.open(options.type, options.url, options.async);
-            }
-
-            if (options.type === 'post') { //establish the connection to the server;
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                xhr.send(options.postvars);
-            } else {
-                xhr.send(null);
-            }
-        },
-
         httpSuccess = function (r) { //determine the success of the HTTP response;
             try {
                 // If no server status is provided and we're actually requesting a local file then it was successful.
@@ -112,8 +79,7 @@ Pete.ajax = (function () {
 
             } catch (e) {}
 
-            // If checking the status failed then assume that the request failed.
-            return false;
+            // If checking the status failed then assume that the request failed.  return false;
         },
 
         // Extract the correct data from the HTTP response.
@@ -138,7 +104,63 @@ Pete.ajax = (function () {
             data = options.data === 'xml' || data ? r.responseXML : r.responseText;
 
             return data;
-        };
+        },
+
+        sendRequest = function (xhr, options) {
+            // We're going to wait for a request for x seconds before giving up.
+            var me = this,
+                timeoutLength = options.timeout,
+                requestId = counter();
+
+            requests[requestId] = xhr;
+            options.id = requestId;
+
+            // Initialize a callback which will fire x seconds from now, canceling the request if it has not already occurred.
+            setTimeout(function () {
+                if (xhr) {
+                    xhr.abort();
+                    options.abort();
+                }
+            }, timeoutLength);
+
+            xhr.onreadystatechange = function () {
+                var result;
+
+                if (xhr.readyState === 4) {
+                    result = httpData(xhr, options);
+                    me.onComplete(result, options, httpSuccess(xhr), xhr);
+
+                    // Clean up after ourselves to avoid memory leaks.
+                    xhr = null;
+                }
+            };
+
+            if (options.type === 'HEAD') {
+                xhr.open(options.type, options.url);
+            } else {
+                xhr.open(options.type, options.url, options.async);
+            }
+
+            if (options.type === 'post') { //establish the connection to the server;
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.send(options.postvars);
+            } else {
+                xhr.send(null);
+            }
+        },
+
+        onComplete = function (result, options, success, xhr) {
+            if (successs) {
+                options.success(result);
+            } else {
+                options.error();
+            }
+
+            options.complete();
+            delete requests[request.id];
+        },
+
+        requests = {};
 
     return {
         /**
@@ -172,6 +194,10 @@ oLink.tooltip(Pete.ajax.get('http://localhost-jslite/sandbox/assert.html'));
         },
         //</source>
 
+        getRequests: function () {
+            return requests;
+        },
+
         /**
          * @function Pete.ajax.load
          * @param {Object} opts An object literal.
@@ -195,15 +221,21 @@ var x = Pete.ajax.load({
                 options = Pete.mixin(Pete.extend(defaults), opts);
 
             xhr = getXHR();
-            sendRequest(xhr, options);
+
+            // TODO: Make all private methods public?
+            sendRequest.call(this, xhr, options);
+
             if (!opts.async) {
                 if (httpSuccess(xhr)) {
                     return httpData(xhr, options);
                 }
             }
-        }
+        },
         //</source>
+
+        // This has to be exposed in case a prototype defines its own API.
+        onComplete: onComplete
     };
     //</source>
-}());
+}()));
 
