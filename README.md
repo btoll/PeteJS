@@ -1,4 +1,4 @@
-PeteJS is all of the following things.
+Pete is all of the following things.
 
 + A dog.
 
@@ -10,7 +10,7 @@ What browsers are supported?
 + Chrome, Firefox, Safari, Opera 12+ and IE 8+.
 
 What is the license?
-+ PeteJS is [free][wtfpl].
++ Pete is [free][wtfpl].
 
 [wtfpl]: http://www.wtfpl.net/
 
