@@ -81,7 +81,7 @@ Car = Pete.compose(Pete.Observer, {
      */
     //<source>
     compose: function (proto) {
-        var args = arguments,
+        var args = Pete.makeArray(arguments).slice(1),
             obj, i, len;
 
         if (Object.create) {
@@ -90,11 +90,15 @@ Car = Pete.compose(Pete.Observer, {
             obj = Pete.extend(proto);
         }
 
-        if (args.length > 1) {
-            // Start with arguments[1].
-            for (i = 1, len = args.length; i < len; i++) {
+        if (args.length) {
+            for (i = 0, len = args.length; i < len; i++) {
                 Pete.mixin(obj, args[i]);
             }
+        }
+
+        // Do any post-processing on the newly-minted object.
+        if (proto.$compose) {
+            proto.$compose.apply(obj, args);
         }
 
         return obj;
@@ -227,14 +231,14 @@ Car = Pete.compose(Pete.Observer, {
     },
     //</source>
 
-    getDom: function (el) {
+    getDom: function (el, root) {
         if (!el) {
             return;
         }
 
         return el.dom ?
             el.dom :
-            typeof el === 'string' ? document.getElementById(el) : el;
+            typeof el === 'string' ? (root || document).getElementById(el) : el;
     },
 
     /**
@@ -442,7 +446,7 @@ Pete.tabClasses = {
 * @describe <p>This contains all possible HTML tags. Is used by <code><a href="#jsdoc">Pete.domQuery</a></code> and <code><a href="#jsdoc">Pete.get.dom</a></code>. Is used internally but can be overwritten for any custom needs.</p>
 */
 //<source>
-Pete.tags = /^(?:\*|a|abbr|acronym|address|applet|area|b|base|basefont|bdo|big|blockquote|body|br|button|caption|center|cite|code|col|colgroup|dd|del|dfn|dir|div|dl|dt|em|fieldset|font|form|frame|frameset|h1|h2|h3|h4|h5|h6|head|hr|html|i|iframe|img|input|ins|isindex|kbd|label|legend|li|link|map|menu|meta|noframes|noscript|object|ol|optgroup|option|p|param|pre|q|s|samp|script|select|small|span|strike|strong|style|sub|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|tt|u|ul|var)$/i;
+Pete.tags = /^(?:\*|a|abbr|acronym|address|applet|area|b|base|basefont|bdo|big|blockquote|body|br|button|caption|center|cite|code|col|colgroup|dd|del|dfn|dir|div|dl|dt|em|fieldset|font|footer|form|frame|frameset|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|iframe|img|input|ins|isindex|kbd|label|legend|li|link|map|menu|meta|noframes|noscript|object|ol|optgroup|option|p|param|pre|q|s|samp|script|section|select|small|span|strike|strong|style|sub|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|tt|u|ul|var)$/i;
 //</source>
 
 /**

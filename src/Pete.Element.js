@@ -16,7 +16,7 @@
 //<source>
 /*
 Pete.Element = function (elem) {
-    //this.dom = typeof elem === "string" ? $(elem) : elem;
+    //this.dom = typeof elem === "string" ? Pete.getDom(elem) : elem;
 
     return Pete.extend(Pete.Element.prototype, {
         dom: elem,
@@ -27,10 +27,26 @@ Pete.Element = function (elem) {
 //</source>
 
 Pete.Element = Pete.compose(Pete.Observer, (function () {
-    var re = /^[a-z]+[^+>=\s]+$/,
+    // Test for possible dom id:
+    //      #?              - May begin with a '#'.
+    //      [a-zA-Z]{1}     - Must begin with a letter.
+    //      [a-zA-Z0-9_-]*  - After the first char may contain a letter, number, underscore or hyphen.
+    var reDomId = /^#?[a-zA-Z]{1}[a-zA-Z0-9_-]*$/,
         reToken = /\{([a-z]+)\}/gi;
 
     return {
+        /**
+         * @function Pete.Element.$compose
+         * @return {None}
+         * @describe <p>Constructor. Shouldn't be called directly.</p>
+         * To be called whenever a Pete.Element object is composed.
+         */
+        //<source>
+        $compose: function () {
+            this.id = this.id || Pete.id()
+        },
+        //</source>
+
         /**
          * @function Pete.Element.addClass
          * @param {String} cls
@@ -233,12 +249,22 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
          */
         //<source>
         create: function (obj, returnDOM) {
-            var el = Pete.compose(Pete.Element, {
-                    dom: document.createElement(obj.tag)
+            var id = obj.id,
+                el = Pete.compose(Pete.Element, {
+                    dom: document.createElement(obj.tag),
+                    id: id
                 }),
                 o, i, prop, alt, len, parent;
 
             el.setId(document.createElement(obj.tag));
+
+            // Pass id as either:
+            //      attr: { id: 'Pete' }
+            //  or
+            //      id: 'Pete'
+            if (id) {
+                dom.id = id
+            }
 
             if (obj.attr) {
                 o = obj.attr;
@@ -298,7 +324,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
 
             // If a parent elem was given and is already an existing node in the DOM append the node to it.
             } else if (obj.parent) {
-                $(obj.parent).appendChild(el.dom);
+                Pete.getDom(obj.parent).appendChild(el.dom);
                 return returnDOM ? el.dom : el;
             // Else return the node to be appended later into the DOM.
             } else {
@@ -414,7 +440,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
 
         /**
          * @function Pete.Element.fly
-         * @param {HTMLElement/String} elem
+         * @param {HTMLElement/String} el
          * @return {Pete.Element}
          * @describe <p>For one-off operations.</p><p>The first time this method is called it checks an internal property to see if a <code><a href="#jsdoc">Pete.Element</a></code> object has been created. If not, it creates one. If it exists, it's re-used. This is important because the wrapper methods never change, and it's not necessary to keep creating new methods for one-off operations. The element is swapped out and is accessible in the <code>dom</code> property.</p><p>A use case would be when a one-time operation is needed to be performed on an element but a reference to that element is not needed for future use. Re-using the flyweight object is highly recommended for efficiency, as in most cases it's already been created.</p>
          */
@@ -423,12 +449,12 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
             var symbol = Pete.globalSymbol,
                 flyweight = {};
 
-            return function (elem) {
+            return function (el) {
                 if (!flyweight[symbol]) {
-                  flyweight[symbol] = Pete.compose(Pete.Element);
+                  flyweight[symbol] = Pete.compose(this);
                 }
 
-                flyweight[symbol].dom = Pete.Element.get(elem, true);
+                flyweight[symbol].dom = this.get(el, true);
                 return flyweight[symbol];
             };
         }()),
@@ -1081,7 +1107,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
          * @example
     Pete.Element.get('theLink').tooltip('This is my tooltip.');
     //and/or
-    oForm.tooltip($('thePara').innerHTML);
+    oForm.tooltip(Pete.getDom('thePara').innerHTML);
 
     //a tooltip can be animated by passing a second parameter of true;
     Pete.Element.get('theLink').tooltip('This is my tooltip.', true);
@@ -1337,7 +1363,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
          */
         //<source>
         formElements: function (form) {
-            var f = Pete.Element.get($(form), true);
+            var f = Pete.Element.get(Pete.getDom(form), true);
 
             if (f.nodeName.toLocaleLowerCase() !== 'form') {
                 throw new Error('This method can only be invoked on a form element.');
@@ -1356,88 +1382,91 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
          * @describe <p>Will only return a single element.</p><p>This method accepts a CSS selector string. If multiple results are found, only the first is returned.</p><p>Returns a <code><a href='#jsdoc'>Pete.Element</a></code> wrapper. If <code>returnDOM</code> is <code>true</code>, returns an HTMLElement instead.</p>
          */
         //<source>
-        get: function (elem, root, returnDOM) {
-            // TODO: It looks like some elements are being cached by an id
-            // and others by a ref to itself.
-            // TODO: Revisit this entire method!
-            var n, el, id;
+        get: (function () {
+            var makeEl = function (dom, id) {
+                var el;
 
-            if (root && typeof root === 'boolean') {
-                returnDOM = root;
-                root = undefined;
-            }
+                // See if el is cached. If so, we're done.
+                // If not, create it and cache it.
+                if (!(el = Pete.cache[id])) {
+                    el = Pete.cache[id] = Pete.compose(Pete.Element, {
+                        dom: dom,
+                        id: id
+                    });
 
-            // If elem is an object we know it's a dom element.
-            // If elem begins with anything other than a letter or contains whitespace
-            // or > (descendant selector) or + (adjacent selector) then handle as usual.
-            // Else if it only contains letters and is not a tag then process like usual,
-            // else pass to the domQuery engine (via Pete.Element.gets).
-            if (typeof elem !== 'string' || re.test(elem) && !Pete.tags.test(elem)) {
-                if (typeof elem === 'string') {
-                    // Exit if element is not in the dom.
-                    if (!(n = $(elem))) {
+                    // Cache a data object on the HTMLElement where we can store internal library information.
+                    if (!dom._pete) {
+                        dom._pete = {};
+                    }
+
+                    // Cache the PeteElement id.
+                    dom._pete.ownerId = id;
+                }
+
+                return el;
+            };
+
+            return function (el, root, returnDOM) {
+                var me = this,
+                    n, el, id, dom;
+
+                if (root && typeof root === 'boolean') {
+                    returnDOM = root;
+                    root = undefined;
+                }
+
+                // If it's an object we assume it's either a Pete.Element or a HTMLElement.
+                if (typeof el !== 'string') {
+                    // Exit if none of the above.
+                    if (!(dom = Pete.getDom(el, root))) {
                         return null;
                     }
 
-                    // Element is already cached.
-                    if ((el = Pete.cache[elem])) {
-                        // Update and refresh element.
-                        el.dom = n;
-                    // Element is not in cache so create it and cache it.
+                    id = el.id;
+
+                    // We were passed an HTMLElement.
+                    if (dom === el) {
+                        // If the Pete.Element has the same id as its dom element, then it must have been given one by the dev.
+                        // Note that dom.id will be an empty string if not set.
+                        el = makeEl(dom, dom.id || Pete.id());
+                    }
+                    // We were passed a PeteElement.
+                    else {
+                        id = el.id;
+
+                        // If it's not in the cache do so now.
+                        // Note that PeteElements created directly (Pete.compose) aren't put in the cache by default.
+                        if (!Pete.cache[id]) {
+                            // Ensure it has an id.
+                            // TODO: setId just returns the id?!
+                            id = id || Pete.id();
+
+                            Pete.cache[id] = el;
+                        }
+                    }
+                } else {
+                    if (reDomId.test(el)) {
+                        // Note el will refer to a DOM id.
+                        // If we've gotten here and the el arg is an HTMLElement, we can safely assume that it has a valid id
+                        // since we've now determined that the passed string is a DOM id.
+                        //
+                        // If the Pete.Element has the same id as its dom element, then it must have been given one by the dev.
+                        el = makeEl(Pete.getDom(el, root), el);
                     } else {
-                        //el = Pete.cache[elem] = new Pete.Element(n);
-                        el = Pete.cache[elem] = Pete.compose(Pete.Element, {
-                            dom: n
+                        // This allows for passing a selector to the domQuery engine (via Pete.Element.gets).
+                        // Pass along a third argument in case root is also passed.
+                        //
+                        // TODO: Using Element.get here causes a Too Much Recursion error.
+                        // Note we don't cache Composite objects!
+                        el = Pete.compose(me, {
+                            dom: me.gets(el, root || true, true)[0]
                         });
                     }
-
-                    return returnDOM ? n : el;
-                } else {
-                    // The element has an id so either get it from cache or create
-                    // a new Element and add it to the cache.
-                    if (elem.id) {
-                        if (!(el = Pete.cache[elem.id])) {
-                            el = Pete.cache[elem.id] = Pete.compose(Pete.Element, {
-                                dom: Pete.getDom(elem)
-                            });
-                        }
-                    } else {
-                        // There's no id, create a unique one, create a new Element and add to cache.
-                        id = Pete.Element.setId();
-
-                        if ((el = Pete.cache[id])) {
-                            el.dom = elem;
-                        } else {
-                            elem = Pete.getDom(elem);
-
-                            el = Pete.cache[id] = Pete.compose(Pete.Element, {
-                                dom: elem
-                            });
-
-                            // TODO: setId just returns the id?!
-                            //el.setId();
-                            el.id = id;
-                        }
-                    }
-
-                    el.dom = elem;
-
-                    return returnDOM ? elem : el;
-                }
-            } else {
-                // This allows for passing a selector to the domQuery engine (via Pete.Element.gets).
-                // Pass along a third argument in case root is also passed.
-                //
-                // TODO: Using Element.get here causes a Too Much Recursion error.
-                if (!(el = Pete.cache[elem])) {
-                    el = Pete.cache[elem] = Pete.compose(Pete.Element, {
-                        dom: Pete.Element.gets(elem, root || true, true)[0]
-                    });
                 }
 
                 return returnDOM ? el.dom : el;
-            }
-        },
+            };
+        }()),
         //</source>
 
         /**
@@ -1455,43 +1484,32 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
          */
         //<source>
         gets: function (selector, root, returnDOM) {
+            var els,
+                a = [],
+                i, len;
+
             if (root && typeof root === 'boolean') {
                 returnDOM = root;
                 root = document;
             }
 
-            var elems,
-                a = [],
-                i, len, elem, el, id;
-
-            // Some older browsers don't support the Selectors API and the Selectors API doesn't support negative attribute selectors, i.e. #myElem[class!=foo].
+            // Some older browsers don't support the Selectors API and the Selectors API doesn't support negative
+            // attribute selectors, i.e. #myElem[class!=foo].
             if (selector.indexOf('!') !== -1 || typeof document.querySelectorAll !== 'function') {
-                elems = Pete.domQuery.search(selector, root); //returns a live HTML collection;
+                els = Pete.domQuery.search(selector, root); //returns a live HTML collection;
             } else {
                 // Use the Selectors API, it's faster and returns a static nodelist.
-                elems = (root || document).querySelectorAll(selector);
+                els = (root || document).querySelectorAll(selector);
             }
 
-            for (i = 0, len = elems.length; i < len; i++) {
-                elem = elems[i];
-
-                if (!elem['pete_id']) {
-                    id = elem.id || Pete.id();
-
-                    // Let's create a Pete.Element for every element found by the composite.
-                    el = Pete.compose(Pete.Element, {
-                        id: id,
-                        dom: elem
-                    });
-
-                    Pete.cache[id] = el;
-                    elem['pete_id'] = id;
-                }
-
-                a.push(elems[i]);
+            // TODO: makeArray?
+            for (i = 0, len = els.length; i < len; i++) {
+                a.push(els[i]);
             }
 
-            return returnDOM ? a : Pete.Composite.init(a);
+            return returnDOM ? a : Pete.compose(Pete.Composite, {
+                elements: a
+            });
         }
         //</source>
     };

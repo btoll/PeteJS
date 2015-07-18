@@ -12,32 +12,33 @@
 // will call each function as a method of Pete.Element.
 (function () {
     var Element = Pete.Element,
-        obj = {},
+        proto = {},
         name;
 
     //Pete.Composite = Pete.compose(Pete.Element, Pete.Composite);
 
     for (name in Element) {
         if (typeof Element[name] === 'function') {
-            Pete.wrap(obj, name);
+            // TODO: Don't include $compose or else an exception will be thrown when trying to invoke .invoke on a Pete.Element!
+            if (name !== '$compose') {
+                Pete.wrap(proto, name);
+            }
         }
     }
 
-    Pete.Composite = Pete.compose(obj, {
+    Pete.Composite = Pete.compose(proto, {
         /**
-         * @function Composite
-         * @param {Object} elems A collection of <code>HTMLElements</code>
+         * @function Pete.Composite.$compose
          * @return {None}
          * @describe <p>Constructor. Shouldn't be called directly.</p>
+         * To be called whenever a Pete.Composite object is composed.
          */
         //<source>
-        init: function (elems) {
-            return Pete.compose(Pete.Composite, {
-                elements: elems,
-                length: elems.length,
-                el: Pete.compose(Pete.Element, {
-                    dom: null
-                })
+        $compose: function () {
+            this.length = this.elements.length;
+
+            this.el = Pete.compose(Pete.Element, {
+                dom: null
             });
         },
         //</source>

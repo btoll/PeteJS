@@ -37,7 +37,7 @@ Pete.ux.DropZoneManager = (function () {
             }
 
             elems.forEach(function (elem) {
-                var zone = Pete.Element.get(elem['pete_id']);
+                var zone = Pete.Element.get(elem);
                 dropZones[zone.id] = zone;
 
                 // Let the Observer know what events can be subscribed to.
@@ -65,14 +65,16 @@ Pete.ux.DropZoneManager = (function () {
         }
 
         v.on('mousedown', function (e) {
-            var target = e.target;
+            var target = e.target,
+                dom;
 
             target = (target.className.indexOf('Pete_draggable') !== -1) ?
                 target :
                 Pete.dom.find(target, '.Pete_draggable');
 
             if (target) {
-                target.owner = this['pete_id'];
+                dom = Pete.getDom(this);
+                target.owner = dom.id || dom._pete.ownerId;
 
                 // Clone the target node and any children.
                 dragSource = target.cloneNode(true);
@@ -105,9 +107,14 @@ Pete.ux.DropZoneManager = (function () {
         });
 
         v.on('mouseover', function (e) {
+            var dom, id;
+
             if (dragSource) {
-                if (sourceElement.owner !== this['pete_id']) {
-                    dropZoneTarget = this['pete_id'];
+                dom = Pete.getDom(this);
+                id = dom.id || dom._pete.ownerId;
+
+                if (sourceElement.owner !== id) {
+                    dropZoneTarget = id;
                     Pete.Element.fly(dragSource).addClass('Pete_overDropZone');
                 }
             }
@@ -146,7 +153,7 @@ Pete.ux.DropZoneManager = (function () {
                         // ...and re-append the original in the new drop zone.
                         zoneTarget.appendChild(sourceElement);
                         // Swap out the previous zone owner for the new one.
-                        sourceElement.owner = o['pete_id'];
+                        sourceElement.owner = o.id;
 
                         if (o.sort) {
                             sort(dropZoneTarget);
