@@ -150,14 +150,14 @@ Pete.ajax = Pete.compose(Pete.Observer, (function () {
         },
 
         onComplete = function (result, options, success, xhr) {
-            if (successs) {
+            if (success) {
                 options.success(result);
             } else {
                 options.error();
             }
 
             options.complete();
-            delete requests[request.id];
+            delete requests[options.id];
         },
 
         requests = {};

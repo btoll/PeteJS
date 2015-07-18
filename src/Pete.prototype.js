@@ -271,65 +271,6 @@ if (!Array.prototype.unique) {
 //</source>
 
 /**
- * @function Date.prototype.getAgeInYears
- * @param {Date/String} lowerLimit
- * @return {Number/Null}
- * @describe <p>This computes a person's age from Today or from another specified date. This method accepts a <code>Date</code> object or a string as its sole parameter and will return the age as a <code>Number</code>. It can be invoked as a static method, i.e. <code>Date.prototype.getAgeInYears</code>, where a date can be passed as the argument like usual. If age is a negative number, <code>null</code> is returned.</p><p>Note that when comparing dates, the <code>Date</code> passed as the argument to <code>Date.prototype.getAgeInYears</code> must be older or the result will be <code>null</code>.</p>
- * @example
-//get the age from Today - June 6, 1944;
-var iAge = Date.prototype.getAgeInYears('June 6, 1944');
-
-or
-
-var iAge = Date.prototype.getAgeInYears(new Date('6/6/1944'));
-
-or
-
-var oDDay = new Date();
-oDDay.setFullYear(1944);
-oDDay.setMonth(5);
-oDDay.setDate(6);
-var x = new Date().getAgeInYears(oDDay);
-
-or
-
-var oDDay = new Date('June 6, 1944');
-var x = new Date().getAgeInYears(oDDay);
-
-or
-
-//get the age from June 6, 1944 to July 4, 1776;
-var oDDay = new Date('June 6, 1944');
-var oIndependenceDay = new Date('July 4, 1776');
-var x = oDDay.getAgeInYears(oIndependenceDay);
- */
-//<source>
-Date.prototype.getAgeInYears = function (lowerLimit) {
-    var upperLimit,
-        age, year, month, day;
-
-    if (this.toString() !== 'Invalid Date') { //getAgeInYears is a method of a Date object;
-        upperLimit = this;
-    } else { //if reached, method was called as a static method;
-        upperLimit = new Date(); //upper limit is always Today;
-        lowerLimit = typeof lowerLimit === 'string' ? new Date(lowerLimit) : lowerLimit;
-    }
-
-    year = parseInt(upperLimit.getFullYear(), 10) - parseInt(lowerLimit.getFullYear(), 10);
-    month = parseInt(upperLimit.getMonth(), 10) - parseInt(lowerLimit.getMonth(), 10);
-    day = parseInt(upperLimit.getDate(), 10) - parseInt(lowerLimit.getDate(), 10);
-
-    age = year;
-    if (month < 0 || (month === 0 && day < 0)) {
-        age = year - 1;
-    }
-
-    // Don't return a negative number.
-    return age >= 0 ? age : null;
-};
-//</source>
-
-/**
  * @function Function.prototype.assert
  * @param {Any} varargs
  * @return {Function}

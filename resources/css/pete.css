@@ -1,3 +1,131 @@
+/***************
+** Grid rules **
+***************/
+.Pete_Grid_container {
+  border: 2px solid #BBB;
+  font: 12px arial;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  /*make it a container for the loading mask*/
+  position: relative;
+}
+.Pete_Grid_container th,
+.Pete_Grid_container td {
+  padding: 0;
+}
+.Pete_Grid_header {
+  background: #99BBE8;
+}
+.Pete_Grid_header th {
+  border-right: 1px solid #CCC;
+  font-size: 13px;
+  text-align: left;
+}
+.Pete_Grid_header th:last-child {
+  border: 0;
+}
+.Pete_Grid_scroller {
+  overflow: auto;
+}
+.Pete_Grid_row {
+  border-bottom: 1px solid #CCC;
+}
+.Pete_Grid_row:hover {
+  background-color: #EAEAEA;
+}
+.Pete_Grid_row_alt {
+  background-color: #FAFAFA;
+}
+.Pete_Grid_body td div {
+  height: 22px;
+  line-height: 22px;
+  overflow: auto;
+}
+.Pete_Pager_row {
+  background: #DDD;
+  /*height: 28px;*/ /*iphone needs this*/
+  line-height: 28px;
+}
+.Pete_Pager_row table {
+  float: right;
+}
+.Pete_Pager_row .first_Pager_table {
+  float: left;
+}
+/******************
+** Tooltip rules **
+******************/
+.Pete_Tooltip {
+  background: #EED;
+  border: 2px solid #789;
+  display: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+}
+.Pete_Tooltip * {
+  margin: 0;
+  padding: 0;
+}
+.Pete_TooltipHeader {
+  background: #B0C4DE;
+  border-bottom: 1px solid #789;
+  color: #FFF;
+  font: normal 11px Arial;
+  margin: 0;
+  padding: 2px;
+}
+.Pete_TooltipWrapper {
+  padding: 10px;
+}
+.Pete_TooltipClose {
+  background: url(../images/close.gif) 0 50% no-repeat;
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  width: 15px;
+  text-decoration: none;
+  text-indent: -9999px;
+}
+/**************
+** Tab rules **
+**************/
+.Pete_Tabs ol {
+  background: #F4F4F4 url(../images/tab_background.jpg) repeat-x bottom;
+  float: left;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.Pete_Tabs ol li {
+  background: url(../images/tab_right.jpg) no-repeat right top;
+  float: left;
+  margin: 0 2px;
+  padding: 0;
+}
+.Pete_Tabs ol li:first-child {
+  margin-left: 8px;
+}
+.Pete_Tabs ol li a {
+  background: url(../images/tab_left.jpg) no-repeat left top;
+  color: #DC6C5C;
+  display: block; /*We set the anchors to block-level elements so we can control all aspects without worrying about the inline box*/
+  font-size: .9em;
+  padding: 3px 10px 4px;
+  text-decoration: none;
+}
+.Pete_Tabs #selected {
+  background-image: url(../images/tab_right_selected.jpg);
+}
+.Pete_Tabs #selected a {
+  background-image: url(../images/tab_left_selected.jpg);
+  padding-bottom: 5px;
+}
+.Pete_Tab {
+  clear: left;
+}
 /**************
 ** DnD rules **
 **************/
@@ -16,6 +144,39 @@
   border: 1px solid #000 !important;
   font-weight: bold;
 }
+/**********************************
+** error box and related classes **
+**********************************/
+.Pete_textError { color: #F00 !important; }
+.Pete_backgroundError { background: #FFC !important; }
+.Pete_errorBox {
+  background: #FFF;
+  border: 1px solid #CCC;
+  margin: 5px;
+  padding: 10px;
+}
+.Pete_errorBox p {
+  font-weight: bold;
+}
+.Pete_errorList li {
+  font-size: 14px;
+}
+.Pete_errorList label {
+  display: block;
+}
+.Pete_errorList span {
+  background: #FFC;
+  color: #CCC;
+  font: italic 11px Arial, Verdana;
+}
+
+.dragdrop {
+  border: 0 !important;
+  margin: 0 !important;
+}
+.disabled { color: #CCC !important; }
+.hide { display: none !important; }
+.show { display: block !important; }
 .clearfix:after {
   clear: both;
   content: " ";

@@ -37,6 +37,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
     return {
         /**
          * @function Pete.Element.$compose
+         * @param {None}
          * @return {None}
          * @describe <p>Constructor. Shouldn't be called directly.</p>
          * To be called whenever a Pete.Element object is composed.

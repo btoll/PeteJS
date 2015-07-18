@@ -10,8 +10,14 @@ Pete.ready(function () {
     // Create the mask and remove once all the scripts have been loaded.
     var //mask = new Pete.ux.Mask(document.body),
         globalSymbol = Pete.globalSymbol,
-        // The regex changes 'Array' to 'Pete' and strips '.gets' from 'Pete.Element.gets', for example.
-        titleRe = /^(Array)?(.*)\.[^.\W]+$/;
+        // The regex does the following:
+        //      (Array|Function|Number|String)? = Matches any of the listed words, if present (for example, the methods
+        //                                        in the prototype file).
+        //      (.*)\.                          = Matches any character up until it encounters the next literal period.
+        //      [A-Za-z0-9_$]+                  = Matches any of the characters in the class.
+        //
+        // The ideas is to change 'Array' to 'Pete' and strip '.gets' from 'Pete.Element.gets', for example.
+        titleRe = /^(Array|Function|Number|String)?(.*)\.[A-Za-z0-9_$]+$/;
 
     //mask.show();
 
@@ -35,10 +41,12 @@ Pete.ready(function () {
             arr,
 
             paintList = function (obj, chunkList) {
+                var i, len;
+
                 // ex. 'Parameters:'.
                 arr.push('<h4>' + obj.name + '</h4>');
 
-                for (var i = 0, iLength = chunkList.length; i < iLength; i++) {
+                for (i = 0, len = chunkList.length; i < len; i++) {
                     arr.push('<ul>');
 
                     if (chunkList[i].name && chunkList[i].type) {
@@ -80,17 +88,21 @@ Pete.ready(function () {
                         aTemp[2] = ' ';
                         aTemp[3] = chunk.example[0].description.invoke('HTMLify');
                         aTemp[4] = '</code></pre></div>';
-                        $('example').innerHTML =  aTemp.join('');
+                        Pete.getDom('example').innerHTML =  aTemp.join('');
                     }
                 },
                 'function': {
                     template: function (obj, chunk) {
                         var arr = [],
                             method = chunk['function'][0].name,
+                            param = chunk.param,
                             i, len, titleHref, titleText;
 
-                        for (i = 0, len = chunk.param.length; i < len; i++) {
-                            arr.push(chunk.param[i].name);
+                        // This allows for the doc stub to omit the @param keyword if there are no params.
+                        if (param) {
+                            for (i = 0, len = param.length; i < len; i++) {
+                                arr.push(param[i].name);
+                            }
                         }
 
                         // If there's no period in the function name then append the global symbol. Also, wrap the method name
@@ -107,11 +119,12 @@ Pete.ready(function () {
                             });
                         }
 
-                        $('title').innerHTML = ['<a href="../src/', titleHref, '.js" target="_blank">', titleText, '</a>'].join('');
+                        Pete.getDom('title').innerHTML = ['<a href="../src/', titleHref, '.js" target="_blank">', titleText, '</a>'].join('');
 
                         signature[1] = method.indexOf('prototype') === -1 ? ':' : ' = ';
                         signature[2] = ' function (';
                         signature[3] = arr.join(', ');
+
                         // This will be inserted via innerHTML in displayItem.
                         signature[4] = ') { ... }';
                     }
@@ -122,7 +135,7 @@ Pete.ready(function () {
 
                         signature.length = 0;
                         signature.push(chunk.type[0].name);
-                        $('title').innerHTML = chunk.property[0].name;
+                        Pete.getDom('title').innerHTML = chunk.property[0].name;
 
                         if (chunk.describe) {
                             arr = [];
@@ -132,7 +145,7 @@ Pete.ready(function () {
                             arr[2] = ' ';
                             arr[3] = chunk.describe[0].description.invoke('HTMLify');
                             arr[4] = '</code></pre></div>';
-                            $('description').innerHTML =  arr.join('');
+                            Pete.getDom('description').innerHTML =  arr.join('');
                         }
                     }
                 },
@@ -163,7 +176,7 @@ Pete.ready(function () {
             link = {},
             // Display all the info for each link that will appear in the tabs.
             displayItem = function (e) {
-                // Rel could be "external" or "example", maybe others.
+                // Rel could be 'external' or 'example', maybe others.
                 if (e.target.rel) {
                     if (e.target.rel === 'external') {
                         location.href = e.target.href;
@@ -176,9 +189,7 @@ Pete.ready(function () {
                 var target = e.target,
                     innerHTML = target.innerHTML,
                     jsdoc,
-                    chunk,
-                    i,
-                    s,
+                    chunk, i, s,
                     // Links in the menubar and links in the search list have different target objects.
                     doExpand = function () {
                         var list = Pete.Element.get(ul),
@@ -213,13 +224,13 @@ Pete.ready(function () {
                         var v, p;
 
                         try {
-                            v = $(innerHTML).jsdoc;
-                            // If we get here try to access an object property (remember if $(innerHTML) resolves to an actual
-                            // HTMLElement but does not have a jsdoc property we could still get here b/c "undefined" wouldn't
+                            v = Pete.getDom(innerHTML).jsdoc;
+                            // If we get here try to access an object property (remember if Pete.getDom(innerHTML) resolves to an actual
+                            // HTMLElement but does not have a jsdoc property we could still get here b/c 'undefined' wouldn't
                             // throw an error, but trying to access a property on the undefined data type would throw an error).
                             p = v.chunk;
                         } catch (e) {
-                            v = $(howMany(innerHTML)).jsdoc;
+                            v = Pete.getDom(howMany(innerHTML)).jsdoc;
                         }
 
                         return v;
@@ -227,7 +238,7 @@ Pete.ready(function () {
 
                 // Only target the links within each 'header'.
                 if (target.nodeName.toLocaleLowerCase() === 'a' && target.className.indexOf('expand') === -1 && target.className.indexOf('contract') === -1) {
-                    // Remove the 'selected' classname from $('tree') and then add it to the current <a>.
+                    // Remove the 'selected' classname from Pete.getDom('tree') and then add it to the current <a>.
                     // Remove the selected class from any element that may have it.
                     Pete.Element.gets('#tree a').removeClass('selected');
 
@@ -237,11 +248,12 @@ Pete.ready(function () {
                     }
 
                     // To be safe remove any text in case the current method doesn't have its @example flag set.
-                    $('example').innerHTML = '';
+                    Pete.getDom('example').innerHTML = '';
 
                     // If target.jsdoc is null, the link was clicked in the api (i.e., in the description of a method) so lookup
                     // the jsdoc object using innerHTML (and if that fails use howMany to get just the namespace we need).
                     jsdoc = target.jsdoc || getJSDoc(innerHTML);
+
                     // Paint the Description tab.
                     if (jsdoc.chunk) {
                         chunk = jsdoc.chunk;
@@ -260,9 +272,9 @@ Pete.ready(function () {
                             }
                         }
 
-                        $('description').innerHTML = arr.join('');
-                        $('source').innerHTML = '<div><pre><code>' + jsdoc.source + '</code></pre></div>';
-                        $('methodSignature').innerHTML = signature.join('');
+                        Pete.getDom('description').innerHTML = arr.join('');
+                        Pete.getDom('source').innerHTML = '<div><pre><code>' + jsdoc.source + '</code></pre></div>';
+                        Pete.getDom('methodSignature').innerHTML = signature.join('');
                         Pete.Element.fly('response').replaceClass('show', 'hide');
                     }
                 }
@@ -278,7 +290,7 @@ Pete.ready(function () {
 
                     // If the link has a namespace property then we know it's a link from a search.
                     case !!target.namespace:
-                        ul = $(target.namespace);
+                        ul = Pete.getDom(target.namespace);
                         link = ul.previousSibling;
 
                         // Don't expand if user clicked on a method in a module that's already been expanded.
@@ -286,7 +298,7 @@ Pete.ready(function () {
                             doExpand();
                         }
 
-                        $(innerHTML).className = 'selected';
+                        Pete.getDom(innerHTML).className = 'selected';
                         break;
 
                     case target.href && target.href.indexOf('#jsdoc') > -1:
@@ -295,10 +307,10 @@ Pete.ready(function () {
 
                         // First we must target a <ul> to expand it, so if s doesn't map to a <ul> we know to prefix it with 'Pete'
                         // which will map to a <ul> (this happens in cases where the <ul id='Pete.domQuery'> and <a id='domQuery').
-                        ul = !$(s) || $(s).nodeName !== 'UL' ? $('Pete.' + s) : $(s);
+                        ul = !Pete.getDom(s) || Pete.getDom(s).nodeName !== 'UL' ? Pete.getDom('Pete.' + s) : Pete.getDom(s);
 
                         if (ul.nodeName !== 'UL') {
-                            ul = $('Pete');
+                            ul = Pete.getDom('Pete');
                         }
 
                         link = ul.previousSibling;
@@ -309,8 +321,8 @@ Pete.ready(function () {
                         }
 
                         // Do the opposite check as what we did previously when applying the classname.
-                        s = !$(s) || $(s).nodeName !== 'A' ? innerHTML : s;
-                        $(s).className = 'selected';
+                        s = !Pete.getDom(s) || Pete.getDom(s).nodeName !== 'A' ? innerHTML : s;
+                        Pete.getDom(s).className = 'selected';
                         break;
                 }
 
@@ -325,9 +337,9 @@ Pete.ready(function () {
             },
 
             search = function (e) {
-                if ($('search').value !== '') {
-                    var searchStr = $('search').value,
-                        searchBy = $('searchBy').value,
+                if (Pete.getDom('search').value !== '') {
+                    var searchStr = Pete.getDom('search').value,
+                        searchBy = Pete.getDom('searchBy').value,
                         fragment = document.createDocumentFragment(),
                         createListItem = function (obj, method) {
                             return Pete.Element.create({tag: 'li',
@@ -364,13 +376,13 @@ Pete.ready(function () {
                         }
                     }
 
-                    $('searchList').className = 'show';
-                    $('searchList').innerHTML = '';
+                    Pete.getDom('searchList').className = 'show';
+                    Pete.getDom('searchList').innerHTML = '';
 
                     if (fragment.childNodes.length > 0) {
-                        $('searchList').appendChild(fragment);
+                        Pete.getDom('searchList').appendChild(fragment);
                     } else {
-                        $('searchList').appendChild(Pete.Element.create({tag: 'li', attr: {innerHTML: 'No items found.'}}).dom);
+                        Pete.getDom('searchList').appendChild(Pete.Element.create({tag: 'li', attr: {innerHTML: 'No items found.'}}).dom);
                     }
 
                     // Finally, delegate the listener.
@@ -467,8 +479,47 @@ Pete.ready(function () {
                     fragment.appendChild(newElem.dom);
                 }
 
-                // Finally, ppend fragment to the <ul>.
-                $(namespace).appendChild(fragment);
+                // Finally, append fragment to the <ul>.
+                Pete.getDom(namespace).appendChild(fragment);
+            },
+
+            initTabs = function (oClasses) {
+                var hookup = function (e) {
+                    var target = e.target;
+                    // IE6 doesn't support HTMLElement.hasAttribute().
+                    //if (target.nodeName.toLocaleLowerCase() === 'a' && target['rel']) {
+
+                    // IE6 doesn't support HTMLElement.hasAttribute().
+                    if (target.nodeName.toLocaleLowerCase() === 'a' && target.getAttribute('rel')) {
+                        if (target.parentNode.id === 'selected') {
+                            return false;
+                        }
+
+                        Pete.Element.gets('.' + Pete.tabClasses.tabs, true).forEach(function (div) {
+                            Pete.makeArray(div.getElementsByTagName('li')).forEach(function (o) {
+                                // Remove every id to make sure that 'selected' is assigned to the correct element.
+                                o.id = '';
+                            });
+                        });
+
+                        target.parentNode.id = 'selected';
+
+                        Pete.Element.gets('div.' + Pete.tabClasses.tab, true).forEach(function (div) {
+                            var o = Pete.Element.fly(div);
+
+                            if (o.dom.id === target.rel) {
+                                o.removeClass('hide');
+                            } else if (!o.hasClass('hide')) {
+                                o.addClass('hide');
+                            }
+                        });
+                    }
+                    e.preventDefault();
+                },
+                oDiv = Pete.Element.gets("." + Pete.tabClasses.tabs);
+
+                // Use event delegation.
+                oDiv.on('click', hookup);
             },
 
             scripts = document.getElementsByTagName('script'),
@@ -509,8 +560,8 @@ Pete.ready(function () {
                             source = chunk.match(/<source>((.|\r\n)*)\/\/<\/source>/)[1];
                             getChunks = [];
                             if (new RegExp('@' + keywords.join('|')).test(chunk)) {
-                                //var rePattern = new RegExp("@(" + keywords.join("|") + ")\\s*(?:{(.*?)})?(?:\\s*\\b(\[a-zA-Z\.]*)\\b\\s*)?((.|\\n|\\r\\n)*?)\\*", "g");
-                                rePattern = new RegExp('@(' + keywords.join('|') + ')\\s*(?:{(.*?)})?(?:\\s*\\b(\[a-zA-Z0-9\.]*)\\b\\s*)?((.|\\r\\n)*?)\\*', 'g');
+                                //var rePattern = new RegExp('@(' + keywords.join('|') + ')\\s*(?:{(.*?)})?(?:\\s*\\b(\[a-zA-Z\.]*)\\b\\s*)?((.|\\n|\\r\\n)*?)\\*', 'g');
+                                rePattern = new RegExp('@(' + keywords.join('|') + ')\\s*(?:{(.*?)})?(?:\\s*\\b(\[a-zA-Z0-9\.$]*)\\b\\s*)?((.|\\r\\n)*?)\\*', 'g');
 
                                 // Extract each keyword's stuff.
                                 while ((x = rePattern.exec(chunk))) {
@@ -534,7 +585,7 @@ Pete.ready(function () {
         }(scripts[i]));
 
         setTimeout(function () {
-            //Pete.ux.Tabs();
+            initTabs();
             Pete.dom.targetBlank();
             Pete.Element.fly('searchForm').on('submit', search);
 
