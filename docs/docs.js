@@ -343,19 +343,18 @@ Pete.ready(function () {
                         fragment = document.createDocumentFragment(),
                         createListItem = function (obj, method) {
                             return Pete.Element.create({tag: 'li',
-                                items: [
-                                    Pete.Element.create({tag: 'a',
-                                            attr: {
-                                                href: '#',
-                                                innerHTML: method,
-                                                // To open the appropriate menubar.
-                                                namespace: obj.namespace,
-                                                // Attach the meat and potatoes.
-                                                jsdoc: obj.jsdoc
-                                            }
-                                        })
-                                    ]
-                                });
+                                items: [{
+                                    tag: 'a',
+                                    attr: {
+                                        href: '#',
+                                        innerHTML: method,
+                                        // To open the appropriate menubar.
+                                        namespace: obj.namespace,
+                                        // Attach the meat and potatoes.
+                                        jsdoc: obj.jsdoc
+                                    }
+                                }]
+                            });
                         },
                         i;
 
@@ -411,24 +410,22 @@ Pete.ready(function () {
                 });
 
                 Pete.Element.create({tag: 'li',
-                    items: [
+                    items: [{
                         // Create the top-level <a> that will open/close the menu.
-                        Pete.Element.create({tag: 'a',
-                            attr: {
-                                href: '#',
-                                cls: 'expand',
-                                innerHTML: namespace
-                            }
-                        }),
-
+                        tag: 'a',
+                        attr: {
+                            href: '#',
+                            cls: 'expand',
+                            innerHTML: namespace
+                        }
+                    }, {
                         // Create the <ul> to which we'll append each <a>method</a>.
-                        Pete.Element.create({tag: 'ul',
-                            attr: {
-                                id: namespace,
-                                cls: 'hide'
-                            }
-                        })
-                    ],
+                        tag: 'ul',
+                        attr: {
+                            id: namespace,
+                            cls: 'hide'
+                        }
+                    }],
                     parent: 'tree'
                 });
 
@@ -462,18 +459,17 @@ Pete.ready(function () {
                     }
 
                     newElem = Pete.Element.create({tag: 'li',
-                        items: [
-                            Pete.Element.create({tag: 'a',
-                                attr: {
-                                    href: obj.url,
-                                    id: method,
-                                    // In the case of 'Pete.Element' or 'Pete.Composite', abbreviatedMethod will be undefined so use method.
-                                    innerHTML: abbreviatedMethod || method,
-                                    // Attach the meat and potatoes.
-                                    jsdoc: arr[i]
-                                }
-                            })
-                        ]
+                        items: [{
+                            tag: 'a',
+                            // In the case of 'Pete.Element' or 'Pete.Composite', abbreviatedMethod will be undefined so use method.
+                            text: abbreviatedMethod || method,
+                            attr: {
+                                href: obj.url,
+                                id: method,
+                                // Attach the meat and potatoes.
+                                jsdoc: arr[i]
+                            }
+                        }]
                     });
 
                     fragment.appendChild(newElem.dom);

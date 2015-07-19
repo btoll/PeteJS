@@ -193,6 +193,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
          * @param {boolean} returnDom optional
          * @return {Pete.Element/HTMLElement}
          * @describe <p>Dynamically create an elem and optionally append to a specified parent (and optionally have that parent created if not already in the dom). Optionally provide an <code>attr</code> object, a <code>style</code> object and an <code>items</code> array.</p><p>Returns a Pete.Element wrapper. If <code>returnDom</code> is <code>true</code>, returns an HTMLElement.</p>
+         <p>Note that you can pass any HTMLElement attribute in the <code>attr</code> object.</p>
          * @example
         Pete.Element.create({tag: 'ul',
             attr: {
@@ -208,29 +209,27 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
                 margin: '40px',
                 padding: '20px'
             },
-            items: [
-                Pete.Element.create({tag: 'li',
+            items: [{
+                tag: 'li',
+                text: '<a href="#" onclick="alert(event); return false;">click me</a>',
+                attr: {
+                    id: 'main',
+                    cls: 'expand'
+                }
+            }, {
+                tag: 'li',
+                attr: {
+                    cls: 'expand'
+                },
+                items: [{
+                    tag: 'a',
                     attr: {
-                        id: 'main',
-                        cls: 'expand',
-                        innerHTML: '<a href="#" onclick="alert(event); return false;">click me</a>'
+                        href: '#',
+                        onclick: "alert('Hello, World!'); return false;",
+                        innerHTML: 'No, click me!'
                     }
-                }),
-                Pete.Element.create({tag: 'li',
-                    attr: {
-                        cls: 'expand'
-                    },
-                    items: [
-                        Pete.Element.create({tag: 'a',
-                            attr: {
-                                href: '#',
-                                onclick: "alert('Hello, World!'); return false;",
-                                innerHTML: 'no, click me!'
-                            }
-                        })
-                    ]
-                })
-            ],
+                }]
+            }],
             parent: document.body
         });
 
@@ -255,9 +254,8 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
                     dom: document.createElement(obj.tag),
                     id: id
                 }),
-                o, i, prop, alt, len, parent;
-
-            el.setId(document.createElement(obj.tag));
+                dom = el.dom,
+                o, i, prop, alt, len, parent, item;
 
             // Pass id as either:
             //      attr: { id: 'Pete' }
@@ -276,13 +274,13 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
                         // NOTE html elements don't natively have 'on*' attribute.
                         if (prop.indexOf('on') === 0) {
                             // NOTE ie6 can't handle i.setAttribute.
-                            el.dom[prop] = typeof o[prop] === 'function' ? o[prop] : new Function(o[prop]);
+                            dom[prop] = typeof o[prop] === 'function' ? o[prop] : new Function(o[prop]);
                         } else {
                             if (prop === 'cls') {
                                 alt = 'className';
                             }
 
-                            el.dom[alt] = o[prop];
+                            dom[alt] = o[prop];
                             //e.dom.setAttribute(prop, o[prop]);
                         }
                     }
@@ -295,21 +293,35 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
                 for (prop in o) {
                     if (o.hasOwnProperty(prop)) {
                         if (prop === 'float') {
-                            el.dom.style[!Pete.isIE ? 'cssFloat' : 'styleFloat'] = o[prop];
+                            dom.style[!Pete.isIE ? 'cssFloat' : 'styleFloat'] = o[prop];
                             continue;
                         }
 
-                        el.dom.style[prop] = o[prop];
+                        dom.style[prop] = o[prop];
                     }
                 }
 
+            }
+
+            // Pass text content as either:
+            //      attr: { innerHTML: 'Pete' }
+            //  or
+            //      text: 'Pete'
+            if (obj.text) {
+                dom.innerHTML = obj.text;
             }
 
             if (obj.items) {
                 o = obj.items;
 
                 for (i = 0, len = o.length; i < len; i++) {
-                    el.dom.appendChild(o[i].dom);
+                    item = o[i];
+
+                    if (!item.parent) {
+                        item.parent = dom;
+                    }
+
+                    this.create(item);
                 }
             }
 
@@ -318,18 +330,22 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
                 o = obj.parent;
 
                 parent = typeof o === 'string' ?
-                    Pete.compose(Pete.Element) : o;
+                    Pete.compose(Pete.Element) :
+                    o;
 
-                parent.appendChild(el.dom);
+                parent.appendChild(dom);
+
                 return returnDOM ? parent.dom : parent;
 
             // If a parent elem was given and is already an existing node in the DOM append the node to it.
             } else if (obj.parent) {
-                Pete.getDom(obj.parent).appendChild(el.dom);
-                return returnDOM ? el.dom : el;
+                Pete.getDom(obj.parent).appendChild(dom);
+
+                return returnDOM ? dom : el;
+            }
             // Else return the node to be appended later into the DOM.
-            } else {
-                return returnDOM ? el.dom : el;
+            else {
+                return returnDOM ? dom : el;
             }
         },
         //</source>
