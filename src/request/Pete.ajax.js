@@ -149,15 +149,15 @@ Pete.ajax = Pete.compose(Pete.Observer, (function () {
             }
         },
 
-        onComplete = function (result, options, success, xhr) {
+        onComplete = function (response, request, success, xhr) {
             if (success) {
-                options.success(result);
+                request.success(response, request, success, xhr);
             } else {
-                options.error();
+                request.error(response, request, success, xhr);
             }
 
-            options.complete();
-            delete requests[options.id];
+            request.complete();
+            delete requests[request.id];
         },
 
         requests = {};

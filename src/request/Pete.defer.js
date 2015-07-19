@@ -24,6 +24,8 @@ Pete.defer = Pete.compose(Pete.ajax, {
 
     callbacks: [],
 
+    data: {},
+
     doCallbacks: function (request) {
         var me = this;
 
@@ -33,12 +35,15 @@ Pete.defer = Pete.compose(Pete.ajax, {
             while (callbacks.length) {
                 callback = callbacks.shift();
                 //if (me.fire('beforecallback', callback, me, request) !== false) {
-                    callback();
+                    callback.call(me, me.data);
                 //}
             }
         //} else {
             //me.clear();
         //}
+
+        // Reset the 'global' data object.
+        me.data = {};
     },
 
     /*
@@ -68,7 +73,7 @@ Pete.defer = Pete.compose(Pete.ajax, {
      * @param {Object} request
      * @return {Object} The response
      */
-    onComplete: function (result, request, success, xhr) {
+    onComplete: function (response, request, success, xhr) {
         var me = this,
             i = 0,
             result, success, response,
@@ -98,10 +103,10 @@ Pete.defer = Pete.compose(Pete.ajax, {
             } else {
                 //me.fire('requestcomplete', me, response, options);
                 //Ext.callback(options.success, options.scope, [response, options]);
-                request.success(result);
+                request.success(me.data, response, request, success, xhr);
             }
         } else {
-            if (result.isException || request.aborted || request.timedout) {
+            if (response.isException || request.aborted || request.timedout) {
                 response = me.createException(request);
             } else {
                 response = me.createResponse(request);
