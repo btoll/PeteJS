@@ -86,7 +86,7 @@ Pete.util = (function () {
         type: "POST",
         async: false,
         onSuccess: function (xmlResponse) {
-          $("myDiv").innerHTML = xmlResponse.entify();
+          Pete.getDom('myDiv').innerHTML = xmlResponse.entify();
         }
       });
          */
@@ -229,7 +229,7 @@ Pete.util = (function () {
         type: 'POST',
         async: false,
         onSuccess: function (sResponse) {
-          $('myDiv').innerHTML = sResponse.HTMLify();
+          Pete.getDom('myDiv').innerHTML = sResponse.HTMLify();
         }
       });
          */

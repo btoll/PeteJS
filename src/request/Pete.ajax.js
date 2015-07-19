@@ -210,7 +210,7 @@ var x = Pete.ajax.load({
   data: 'html',
   type: 'POST',
   success: function (sResponse) {
-    $('myDiv').innerHTML = sResponse.HTMLify();
+    Pete.getDom('myDiv').innerHTML = sResponse.HTMLify();
   }
 });
          */

@@ -139,7 +139,7 @@ Pete.ux.DropZoneManager = (function () {
 
         // If dropZoneTarget is not null (from a no-drop area) or within the same drop zone.
         if (dropZoneTarget && dropZoneTarget.indexOf(sourceElement.owner) === -1) {
-            //zoneTarget = $(dropZoneTarget);
+            //zoneTarget = Pete.getDom(dropZoneTarget);
             zoneTarget = Pete.Element.get(dropZoneTarget, true);
 
             o = Pete.ux.DropZoneManager.getDropZones()[dropZoneTarget];
@@ -221,7 +221,7 @@ Pete.ux.DropZoneManager = (function () {
     // provided property called 'sortOrder').
     function sort(sDropZone) {
         // Get all child nodes within the drop zone that have a 'sortOrder' property.
-        var arr = Pete.makeArray($(sDropZone).childNodes).filter(function (v) {
+        var arr = Pete.makeArray(Pete.getDom(sDropZone).childNodes).filter(function (v) {
             // Should there be a better check?
             return (typeof v.sortOrder === 'number');
         }),

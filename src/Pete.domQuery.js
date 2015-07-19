@@ -145,7 +145,7 @@ Pete.domQuery = (function () {
         fnGetElementsByClassName = function (vClassname, vRootElem, sSearchByTag) {
             var cElems, arr = [], bIsString = true;
             if (vRootElem) {
-                cElems = $(vRootElem).getElementsByTagName(sSearchByTag || '*');
+                cElems = Pete.getDom(vRootElem).getElementsByTagName(sSearchByTag || '*');
             } else {
                 cElems = document.getElementsByTagName("*") || document.all;
             }

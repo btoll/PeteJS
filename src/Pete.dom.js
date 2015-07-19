@@ -6,10 +6,6 @@
  * and GPL (GPL-LICENSE.txt) licenses.
  *
  */
-var $ = function (elem, scope) {
-    return typeof elem === "string" ? (scope || document).getElementById(elem) : elem;
-};
-
 Pete.dom = {
     /**
      * @function Pete.dom.attachHandler
@@ -58,7 +54,7 @@ Pete.ready(Pete.dom.attachHandler);
     //<source>
     cleanWhitespace: function (element) {
         var args = arguments,
-            element = (element && $(element)) || document,
+            element = (element && Pete.getDom(element)) || document,
             x, len, i, childNode;
 
         for (x = 0, len = element.childNodes.length; x < len; x++) {
@@ -420,7 +416,7 @@ var aElems = Pete.dom.remove(['test', 'anotherTest', 'oneMore']);
         }
 
         if (typeof toRemove === 'string') {
-            elem = $(toRemove);
+            elem = Pete.getDom(toRemove);
             if (elem) {
                 return elem.parentNode.removeChild(elem);
             }
@@ -429,7 +425,7 @@ var aElems = Pete.dom.remove(['test', 'anotherTest', 'oneMore']);
             removedElements = [];
 
             for (i = 0, len = toRemove.length; i < len; i++) {
-                elem = $(toRemove[i]);
+                elem = Pete.getDom(toRemove[i]);
                 if (elem) {
                     removedElements.push(elem.parentNode.removeChild(elem));
                 }
@@ -445,10 +441,10 @@ var aElems = Pete.dom.remove(['test', 'anotherTest', 'oneMore']);
         // Kids can either be an array (remove multiple nodes at once) or an object or a string (only remove one node).
         if (kids.constructor === Array) {
             for (var i = 0, len = kids.length; i < len; i++) {
-                $(kids[i]).parentNode.removeChild(elem);
+                Pete.getDom(kids[i]).parentNode.removeChild(elem);
             }
         } else {
-            $(kids).parentNode.removeChild(elem);
+            Pete.getDom(kids).parentNode.removeChild(elem);
         }
     },
     //</source>

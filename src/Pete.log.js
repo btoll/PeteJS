@@ -21,30 +21,30 @@
 
 Pete.log.enable({
   Pete_systemLog: function (e) {
-    $("log").innerHTML += "<br />" + e.log;
+    Pete.getDom('log').innerHTML += '<br />' + e.log;
   },
 
   debug: function (e) {
-    $("debug").innerHTML += "<br />" + e.log;
+    Pete.getDom('debug').innerHTML += '<br />' + e.log;
   },
 
   error: function (e) {
-    $("error").innerHTML += "<br />" + e.log;
+    Pete.getDom('error').innerHTML += '<br />' + e.log;
   }
 });
 
 //now we can use the log types we've seeded, plus add or disable any others;
 
-Pete.log.debug([1, 2, 3], "bob", Pete.log);
-Pete.log.debug("An example of type coercion is ", 10 == "10", Pete.log instanceof Object);
+Pete.log.debug([1, 2, 3], 'bob', Pete.log);
+Pete.log.debug('An example of type coercion is ', 10 == '10', Pete.log instanceof Object);
 
-Pete.log.enable("phillies", function () {});
+Pete.log.enable('phillies', function () {});
 
-Pete.log.disable("debug");
+Pete.log.disable('debug');
 
-Pete.log.debug("debug");
+Pete.log.debug('debug');
 
-Pete.log.error("error!");
+Pete.log.error('error!');
  */
 //<source>
 Pete.log = Pete.compose(Pete.Observer, (function () {

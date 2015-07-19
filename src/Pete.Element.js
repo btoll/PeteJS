@@ -501,7 +501,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
                 return dom.style[name];
             } else if (document.defaultView && document.defaultView.getComputedStyle) { //w3c;
                 // It uses the traditional 'text-align' style of rule writing instead of 'textAlign'.
-                name = name.replace(/([A-Z])/g, "-$1");
+                name = name.replace(/([A-Z])/g, '-$1');
                 name = name.toLocaleLowerCase();
 
                 // Get the style object and get the value of the property if it exists.
