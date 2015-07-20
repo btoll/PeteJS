@@ -27,6 +27,14 @@ Pete.Template = {
     re: /\{(\w+)\}/g,
     //</source>
 
+    $compose: function () {
+        var html = this.html;
+
+        if (Pete.isArray(html)) {
+            this.html = html.join('');
+        }
+    },
+
     /**
      * @function Pete.Template.append
      * @param {HTMLElement/Pete.Element} elem
@@ -56,26 +64,6 @@ Pete.Template = {
 
     //<source>
     init: function (html) {
-        var a = arguments,
-            buf, i, len;
-
-        if (Pete.isArray(html)) {
-            html = html.join('');
-        } else if (a.length > 1) {
-            buf = [];
-
-            for (i = 0, len = a.length; i < len; i++) {
-                if (typeof a[i] === 'object') {
-                    Pete.mixin(this, a[i]);
-                } else {
-                    buf[buf.length] = a[i];
-                }
-            }
-
-            html = buf.join("");
-        }
-
-        this.html = html;
     }
     //</source>
 };
