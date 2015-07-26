@@ -179,16 +179,35 @@ Pete.mixin(Pete, {
     //</source>
 
     /**
+     * @function Pete.emptyFn
+     * @param None
+     * @return {Function}
+     */
+    // <source>
+    emptyFn: function () {},
+    //</source>
+
+    // @private
+    // Note that this is only here for legacy browsers that don't support Object.create. This should not be called
+    // directly.
+    extend: function (proto) {
+        var F = Pete.emptyFn;
+        F.prototype = proto;
+
+        return new F();
+    }.assert(Object),
+
+    /**
      * @function Pete.flush
      * @param {Array/String} action Function argument(s) can be an <code>Array</code> or one or more <code>Strings</code>
      * @return {None}
      * @describe <p>Values are:</p>
-<ul>
-  <li><code>cache</code> - clear the cache of any <code><a href="#jsdoc">Pete.Elements</a></code></li>
-  <li><code>disabled</code> - re-enable any disabled elements</li>
-  <li><code>flyweight</code> - clear the flyweight object</li>
-  <li><code>garbage</code> - clear the garbage cache of any <code>HTMLElements</code> that were removed from the DOM</li>
-</ul>
+    <ul>
+      <li><code>cache</code> - clear the cache of any <code><a href="#jsdoc">Pete.Elements</a></code></li>
+      <li><code>disabled</code> - re-enable any disabled elements</li>
+      <li><code>flyweight</code> - clear the flyweight object</li>
+      <li><code>garbage</code> - clear the garbage cache of any <code>HTMLElements</code> that were removed from the DOM</li>
+    </ul>
      */
     //<source>
     flush: function (action) {
@@ -331,16 +350,6 @@ Pete.mixin(Pete, {
         return arr;
     },
     //</source>
-
-    // @private
-    // Note that this is only here for legacy browsers that don't support Object.create. This should not be called
-    // directly.
-    extend: function (proto) {
-        var F = function () {};
-        F.prototype = proto;
-
-        return new F();
-    }.assert(Object),
 
     /**
      * @function Pete.ready

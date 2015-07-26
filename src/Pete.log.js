@@ -38,7 +38,7 @@ Pete.log.enable({
 Pete.log.debug([1, 2, 3], 'bob', Pete.log);
 Pete.log.debug('An example of type coercion is ', 10 == '10', Pete.log instanceof Object);
 
-Pete.log.enable('phillies', function () {});
+Pete.log.enable('phillies', Pete.emptyFn) {});
 
 Pete.log.disable('debug');
 

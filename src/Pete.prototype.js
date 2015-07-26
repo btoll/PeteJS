@@ -281,7 +281,7 @@ var foobar = function (a, b) {
   alert(b);
 }.assert(Function, Number);
 
-foobar(function () {}, 26);
+foobar(Pete.emptyFn, 26);
 
 ----------------
  or as a method

@@ -21,10 +21,11 @@ Pete.ajax = Pete.compose(Pete.Observer, (function () {
             postvars: '',
             // The headers that will be returned (for HEAD requests only).
             headers: '',
-            timeout: 60000, complete: function () {},
-            error: function () {},
-            success: function () {},
-            abort: function () {},
+            timeout: 60000,
+            complete: Pete.emptyFn,
+            error: Pete.emptyFn,
+            success: Pete.emptyFn,
+            abort: Pete.emptyFn,
             async: true
         },
         //</source>
