@@ -44,7 +44,18 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
          */
         //<source>
         $compose: function () {
-            this.id = this.id || Pete.id()
+            var me = this,
+                dom = me.dom,
+                id = me.id || Pete.id();
+
+            me.id = id;
+
+            // TODO: Do we want to poke this on here?
+            if (dom && !dom._pete) {
+                dom._pete = {
+                    ownerId: id
+                };
+            }
         },
         //</source>
 
@@ -1417,6 +1428,8 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
 
                     Pete.cache[id] = el;
 
+                    // Note that the _pete object will be stamped onto the HTMLElement in $compose if the
+                    // PeteElement is created with an HTMLElement.
                     // Cache a data object on the HTMLElement where we can store internal library information.
                     if (!dom._pete) {
                         dom._pete = {};
