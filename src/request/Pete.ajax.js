@@ -182,7 +182,7 @@ oLink.tooltip(Pete.ajax.get('http://localhost-jslite/sandbox/assert.html'));
         //<source>
         get: function (sURL) {
             var xhr,
-                options = Pete.mixin(Pete.extend(defaults), {
+                options = Pete.mixin(Pete.compose(defaults), {
                     url: sURL,
                     async: false
                 });
@@ -218,7 +218,7 @@ var x = Pete.ajax.load({
         load: function (opts) {
             var xhr,
                 // Make a clone of defaults so each closure gets its own copy.
-                options = Pete.mixin(Pete.extend(defaults), opts);
+                options = Pete.mixin(Pete.compose(defaults), opts);
 
             xhr = getXHR();
 

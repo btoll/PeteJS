@@ -61,23 +61,16 @@ Pete.mixin(Pete, {
      * @param {Mixed} superClass Pass either a constructor or an object
      * @param {Object} overrides optional Any object properties will be added to the subclass' prototype
      * @return {Function} subClass
-     * @describe <p>Extends one class with another class. Returns the <code>subClass</code> constructor.</p><p>This method causes one reference type to inherit from another using the prototype chaining inheritance pattern. Note that this does not inherit the <code>superClass</code>' instance properties, it only inherits properties residing on the <code>superClass</code>' prototype object. Use combination inheritance (i.e., prototype chaining + constructor stealing) to inherit all of the properties from <code>superClass</code> (constructor stealing, aka object masquerading or classical inheritance, will inherit the instance properties).</p>
-<p>It's also possible to create a constructor by passing the reference type to extend as the first argument and the methods to override as the second argument.</p>
-<p>For prototypal inheritance please see <code><a href="#jsdoc">Pete.proto</a></code>.</p>
-     * @example
-function Person() {
-  Person.superclass.constructor.call(); //constructor stealing;
-}
+     * @describe
+    Pete.compose(Person, Pete.Observer); //prototype chaining;
 
-Pete.compose(Person, Pete.Observer); //prototype chaining;
+    -- or --
 
--- or --
-
-Car = Pete.compose(Pete.Observer, {
-  init: function () {
-    //code here...;
-  }
-});
+    Car = Pete.compose(Pete.Observer, {
+      init: function () {
+        //code here...;
+      }
+    });
      */
     //<source>
     compose: function (proto) {
@@ -339,20 +332,15 @@ Car = Pete.compose(Pete.Observer, {
     },
     //</source>
 
-    /**
-     * @function Pete.extend
-     * @param {Object} proto
-     * @return {Object}
-     * @describe <p>Performs prototypal inheritance. Takes an object to use as another's prototype and returns the new object.</p>
-     */
-    //<source>
+    // @private
+    // Note that this is only here for legacy browsers that don't support Object.create. This should not be called
+    // directly.
     extend: function (proto) {
         var F = function () {};
         F.prototype = proto;
 
         return new F();
     }.assert(Object),
-    //</source>
 
     /**
      * @function Pete.ready

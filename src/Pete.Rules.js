@@ -25,7 +25,7 @@ For instance, to set an "alpha" rule, the form element should look like the foll
  */
 //<source>
 Pete.Rules = (function () {
-    var defaults = {
+    var rules = {
           email: {
               re: "^[_a-z0-9-]+(\\.[_a-z0-9-]+)*@[a-z0-9-]+(\\.[a-z0-9-]+)*(\\.[a-z]{2,3})$",
               //re: "^[\w-]+(\\.[\w-]+)*@[a-z0-9-]+(\\.[\w-]+)*(\\.[a-z]{2,3})$",
@@ -46,8 +46,7 @@ Pete.Rules = (function () {
               mask: "{1}-{2}",
               message: "Can only contain numbers and a dash."
           }
-      },
-      rules = Pete.extend(defaults); //prototypal inheritance;
+      };
 
     return {
         getRule: function (name) {
@@ -58,8 +57,9 @@ Pete.Rules = (function () {
             var obj = {};
 
             obj[name] = oRule;
-            defaults = Pete.mixin(rules, obj);
-            return defaults;
+            rules = Pete.mixin(rules, obj);
+
+            return rules;
         }.assert(String, Object),
 
         removeRule: function (name) {

@@ -10,7 +10,7 @@ Pete.DD = (function () {
         dropZoneTarget;
 
     function add(v, o) {
-        var elems = [],
+        var els = [],
             doc = Pete.Element.get(document),
             body = document.body,
             registered = false,
@@ -22,12 +22,12 @@ Pete.DD = (function () {
 
         if (!(v instanceof Array)) {
             if (v.elements && v.elements.length > 0) {
-                elems = v.elements;
+                els = v.elements;
             } else {
-                elems = [Pete.Element.get(v, true)];
+                els = [Pete.Element.get(v, true)];
             }
 
-            elems.forEach(function (elem) {
+            els.forEach(function (elem) {
                 var zone = Pete.Element.get(elem);
                 dropZones[zone.id] = zone;
 
@@ -49,7 +49,6 @@ Pete.DD = (function () {
                 }
 
                 zone.sort = o.sort || false;
-                zone.snapToZone = o.snapToZone || false;
             });
         } else {
             dropZones.push(Pete.Element.get(v));
@@ -81,24 +80,14 @@ Pete.DD = (function () {
                 dragProxy.addClass('Pete_dragging');
                 body.appendChild(dragProxy.dom);
 
-                document.onmousemove = function (e) {
-                    e = e || window.event;
-
-                    dragProxy.setStyle({
-                        display: 'block',
-                        top: Pete.util.getY(e) + 20 + 'px',
-                        left: Pete.util.getX(e) + 10 + 'px'
-                    });
-                };
+                doc.on('mousemove', onMouseMove);
             }
 
             // Cancel out any text selections.
             body.focus();
 
-            // Prevent text selection in IE.
-            document.onselectstart = function () {
-                return false;
-            };
+            // TODO: if (Pete.isIE) ...
+            doc.on('selectstart', onSelectStart);
 
             e.preventDefault();
         });
@@ -139,8 +128,19 @@ Pete.DD = (function () {
         return dragProxy;
     }
 
+    function onMouseMove(e) {
+        e = e || window.event;
+
+        dragProxy.setStyle({
+            display: 'block',
+            top: Pete.util.getY(e) + 20 + 'px',
+            left: Pete.util.getX(e) + 10 + 'px'
+        });
+    }
+
     function onNodeDrop(e) {
-        var body = document.body,
+        var doc = Pete.Element.get(document),
+            body = document.body,
             o;
 
         if (!dragProxy) {
@@ -169,16 +169,6 @@ Pete.DD = (function () {
                             sort(dropZoneTarget);
                         }
 
-                        // sourceEl has already been snapped to the zone and now needs to have its original styles
-                        // added back to it (unless dropped in another zone that needs to also be snapped to the zone).
-                        if (sourceEl.dom._pete && sourceEl.dom._pete.snapped && !o.snapToZone) {
-                            sourceEl.setStyle(sourceEl.dom._pete.originalStyles);
-                            sourceEl.dom._pete.snapped = false;
-                        } // Only snap to zone if it hasn't already been snapped.
-                        else if (/*!sourceEl.dom._pete.snapped && */o.snapToZone) {
-                            snapToZone(sourceEl);
-                        }
-
                         // NOTE: If it's already been snapped to zone and is dropped into another snapped zone, don't do
                         // anything above b/c it's already been snapped and has its original styles bound to itself.
                     } else {
@@ -194,50 +184,28 @@ Pete.DD = (function () {
         }
 
         // ...and remove the property so the check in the beginning of this method tcob.
-        dragProxy = document.onmousemove = document.onselectstart = null;
+        dragProxy = null;
+
+        // TODO: if (Pete.isIE) ...
+        doc.un('selectstart', onSelectStart);
+        doc.un('mousemove', onMouseMove);
     }
 
-    function snapToZone(sourceEl) {
-        var getStyle = Pete.util.getStyle,
-            dom = sourceEl.dom,
-            style = {
-                borderTopColor: getStyle(dom, 'border-top-color'),
-                borderTopStyle: getStyle(dom, 'border-top-style'),
-                borderTopWidth: getStyle(dom, 'border-top-width'),
-
-                borderRightColor: getStyle(dom, 'border-right-color'),
-                borderRightStyle: getStyle(dom, 'border-right-style'),
-                borderRightWidth: getStyle(dom, 'border-right-width'),
-
-                borderBottomColor: getStyle(dom, 'border-bottom-color'),
-                borderBottomStyle: getStyle(dom, 'border-bottom-style'),
-                borderBottomWidth: getStyle(dom, 'border-bottom-width'),
-
-                borderLeftColor: getStyle(dom, 'border-left-color'),
-                borderLeftStyle: getStyle(dom, 'border-left-style'),
-                borderLeftWidth: getStyle(dom, 'border-left-width'),
-
-                marginTop: getStyle(dom, 'margin-top'),
-                marginRight: getStyle(dom, 'margin-right'),
-                marginBottom: getStyle(dom, 'margin-bottom'),
-                marginLeft: getStyle(dom, 'margin-left')
-            };
-
-        dom._pete.snapped = true;
-        dom.style.border = dom.style.margin = 0;
-        dom._pete.originalStyles = style;
+    // Prevent text selection in IE.
+    function onSelectStart() {
+        return false;
     }
 
     // Sort the drop zone's sortable elements after drop (NOTE that the sort is dependent upon a developer
     // provided property called 'sortOrder').
-    function sort(sDropZone) {
+    function sort(dropZone) {
         // Get all child nodes within the drop zone that have a 'sortOrder' property.
-        var arr = Pete.makeArray(Pete.getDom(sDropZone).childNodes).filter(function (v) {
+        var arr = Pete.makeArray(Pete.getDom(dropZone).childNodes).filter(function (v) {
             // Should there be a better check?
             return (typeof v.sortOrder === 'number');
         }),
         frag = document.createDocumentFragment(),
-        oDropZone = Pete.Element.get(sDropZone);
+        dz = Pete.Element.get(dropZone);
 
         // Sort all nodes in this drop zone by their sort order property.
         arr.sort(function (a, b) {
@@ -245,20 +213,21 @@ Pete.DD = (function () {
         });
 
         // Remove all the nodes...
-        oDropZone.remove(true);
+        dz.remove(true);
 
         // ...and readd them to the document fragment.
         arr.forEach(function (v) {
             frag.appendChild(v);
         });
 
-        oDropZone.append(frag);
+        dz.append(frag);
     }
 
     return {
         initDD: function (v, o) {
             return add(v, o || {});
         },
+
         getDropZones: function () {
             return dropZones;
         }

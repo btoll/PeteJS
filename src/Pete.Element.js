@@ -9,24 +9,12 @@
 
 /**
 * @function Element
-* @param {String/HTMLElement} elem
-* @return {Pete.Element/Null}
-* @describe <p>Constructor. Shouldn't be called directly.</p>
+* @param None
+* @return {Pete.Element}
 */
 //<source>
-/*
-Pete.Element = function (elem) {
-    //this.dom = typeof elem === "string" ? Pete.getDom(elem) : elem;
-
-    return Pete.extend(Pete.Element.prototype, {
-        dom: elem,
-        id: Pete.id()
-    });
-};
-*/
-//</source>
-
 Pete.Element = Pete.compose(Pete.Observer, (function () {
+//</source>
     // Test for possible dom id:
     //      #?              - May begin with a '#'.
     //      [a-zA-Z]{1}     - Must begin with a letter.
@@ -807,29 +795,31 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
                 type = [type];
             }
 
-            type.forEach(function (sType) {
-                Pete.dom.event.add(this.dom, sType, fn);
+            type.forEach(function (type) {
+                var dom = this.dom;
+
+                Pete.dom.event.add(dom, type, fn);
 
                 // Create the object for each id.
                 var o = null, arr = [];
 
-                if (!Pete.events[this.dom.id]) {
-                    Pete.events[this.dom.id] = {};
+                if (!Pete.events[dom.id]) {
+                    Pete.events[dom.id] = {};
                 }
-                o = Pete.events[this.dom.id];
+                o = Pete.events[dom.id];
 
                 // Within each id object store the handler for each event type.
-                if (!o[sType]) {
-                    o[sType] = fn;
+                if (!o[type]) {
+                    o[type] = fn;
                 // If there's more than one handler for a given type then create an array of the handlers and assign it to the type.
                 } else {
-                    if (!Pete.isArray(o[sType])) {
+                    if (!Pete.isArray(o[type])) {
                         arr = Pete.toArray(o);
                         arr.push(fn);
-                        o[sType] = arr;
+                        o[type] = arr;
                     // It's already been cast to an array.
                     } else {
-                        o[sType].push(fn);
+                        o[type].push(fn);
                     }
                 }
             }.bind(this));
@@ -1208,11 +1198,11 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
                 type = [type];
             }
 
-            type.forEach(function (sType) {
+            type.forEach(function (type) {
                 var dom = me.dom;
 
-                Pete.Element.event.remove(dom, sType, fn);
-                delete Pete.events[dom.id][sType];
+                Pete.dom.event.remove(dom, type, fn);
+                delete Pete.events[dom.id][type];
             });
         },
         //</source>

@@ -12,7 +12,7 @@
  * @function Observer
  * @param {None}
  * @return {None}
- * @describe <p>Abstract class, useful for custom events. This reference type is meant to be extended, i.e., <blockquote><code>Pete.extend(MyNewClass, Pete.Observer);</code></blockquote></p>
+ * @describe <p>Abstract class, useful for custom events. This reference type is composable, i.e., <blockquote><code>Pete.compose(Pete.Observer);</code></blockquote></p>
 */
 //<source>
 Pete.Observer = {
