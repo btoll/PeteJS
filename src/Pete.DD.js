@@ -1,36 +1,27 @@
-Pete.ux = {};
-
-Pete.mixin(Pete.EventManager = (function () {
-    var fn = function (dom, type, fn) {
-        Pete.Element.get(dom).on(type, fn);
-    };
-
-    return {
-        register: fn
-    };
-}()), Pete.Observer);
-
-Pete.EventManager.register(document, 'mouseup', function (e) {
-    Pete.ux.DropZoneManager.onMouseUp(e);
-});
-
-Pete.ux.DropZoneManager = (function () {
+Pete.DD = (function () {
     var i = 0,
-        len,
         dropZones = {},
+        len,
         // The cloned dom element.
-        dragSource,
+        dragProxy,
         // The original dom element that has been selected to be dragged.
-        sourceElement,
+        sourceEl,
         // The zone target (an element id) where the dragged element will be dropped.
         dropZoneTarget;
 
     function add(v, o) {
         var elems = [],
-          ev, subscribe;
+            doc = Pete.Element.get(document),
+            body = document.body,
+            registered = false,
+            ev, subscribe;
+
+        if (!registered) {
+            doc.on('mouseup', onNodeDrop);
+        }
 
         if (!(v instanceof Array)) {
-            if (v.elements.length > 0) {
+            if (v.elements && v.elements.length > 0) {
                 elems = v.elements;
             } else {
                 elems = [Pete.Element.get(v, true)];
@@ -73,21 +64,27 @@ Pete.ux.DropZoneManager = (function () {
                 Pete.dom.find(target, '.Pete_draggable');
 
             if (target) {
-                dom = Pete.getDom(this);
-                target.owner = dom.id || dom._pete.ownerId;
+                sourceEl = Pete.compose(Pete.Element, {
+                    dom: target,
+                    id: 'Pete_sourceEl'
+                });
 
-                // Clone the target node and any children.
-                dragSource = target.cloneNode(true);
-                sourceElement = target;
+                dom = Pete.getDom(this);
+                sourceEl.ddOwner = dom.id || dom._pete.ownerId;
+
+                dragProxy = getDragProxy({
+                    // Clone the target node and any children.
+                    dom: target.cloneNode(true)
+                });
 
                 // Concatenate b/c we don't want to overwrite any class that may already be bound to it.
-                Pete.Element.fly(dragSource).addClass('Pete_dragging');
-                document.body.appendChild(dragSource);
+                dragProxy.addClass('Pete_dragging');
+                body.appendChild(dragProxy.dom);
 
                 document.onmousemove = function (e) {
                     e = e || window.event;
 
-                    Pete.Element.fly(dragSource).setStyle({
+                    dragProxy.setStyle({
                         display: 'block',
                         top: Pete.util.getY(e) + 20 + 'px',
                         left: Pete.util.getX(e) + 10 + 'px'
@@ -96,7 +93,7 @@ Pete.ux.DropZoneManager = (function () {
             }
 
             // Cancel out any text selections.
-            document.body.focus();
+            body.focus();
 
             // Prevent text selection in IE.
             document.onselectstart = function () {
@@ -109,13 +106,13 @@ Pete.ux.DropZoneManager = (function () {
         v.on('mouseover', function (e) {
             var dom, id;
 
-            if (dragSource) {
+            if (dragProxy) {
                 dom = Pete.getDom(this);
                 id = dom.id || dom._pete.ownerId;
 
-                if (sourceElement.owner !== id) {
+                if (sourceEl.ddOwner !== id) {
                     dropZoneTarget = id;
-                    Pete.Element.fly(dragSource).addClass('Pete_overDropZone');
+                    Pete.Element.fly(dragProxy).addClass('Pete_overDropZone');
                 }
             }
         });
@@ -123,56 +120,69 @@ Pete.ux.DropZoneManager = (function () {
         // NOTE: It's very important to listen to this event so onNodeDrop knows when it can remove
         // the cloned node and when to remove the class when the node is over a no-drop area.
         v.on('mouseout', function (e) {
-            if (dragSource) {
+            if (dragProxy) {
                 dropZoneTarget = null;
-                Pete.Element.fly(dragSource).removeClass('Pete_overDropZone');
+                Pete.Element.fly(dragProxy).removeClass('Pete_overDropZone');
             }
         });
+
+        registered = true;
+    }
+
+    function getDragProxy(config) {
+        if (!dragProxy) {
+            dragProxy = Pete.compose(Pete.Element, config);
+        } else {
+            dragProxy.dom = config.dom;
+        }
+
+        return dragProxy;
     }
 
     function onNodeDrop(e) {
-        var o;
+        var body = document.body,
+            o;
 
-        if (!dragSource) {
+        if (!dragProxy) {
             return;
         }
 
         // If dropZoneTarget is not null (from a no-drop area) or within the same drop zone.
-        if (dropZoneTarget && dropZoneTarget.indexOf(sourceElement.owner) === -1) {
+        if (dropZoneTarget && dropZoneTarget.indexOf(sourceEl.ddOwner) === -1) {
             //zoneTarget = Pete.getDom(dropZoneTarget);
             zoneTarget = Pete.Element.get(dropZoneTarget, true);
 
-            o = Pete.ux.DropZoneManager.getDropZones()[dropZoneTarget];
+            o = dropZones[dropZoneTarget];
 
             if (o) {
-                if (o.id !== sourceElement.owner) {
+                if (o.id !== sourceEl.ddOwner) {
                     // Drop the node in the drop zone if developer-provided callback doesn't cancel the behavior.
                     if (o.fire('beforenodedrop') !== false) {
                         // Remove the cloned node from the dom...
-                        document.body.removeChild(dragSource);
+                        body.removeChild(dragProxy.dom);
                         // ...and re-append the original in the new drop zone.
-                        zoneTarget.appendChild(sourceElement);
+                        zoneTarget.appendChild(sourceEl.dom);
                         // Swap out the previous zone owner for the new one.
-                        sourceElement.owner = o.id;
+                        sourceEl.ddOwner = o.id;
 
                         if (o.sort) {
                             sort(dropZoneTarget);
                         }
 
-                        // sourceElement has already been snapped to the zone and now needs to have its original styles
+                        // sourceEl has already been snapped to the zone and now needs to have its original styles
                         // added back to it (unless dropped in another zone that needs to also be snapped to the zone).
-                        if (sourceElement.snapped && !o.snapToZone) {
-                            Pete.Element.fly(sourceElement).setStyle(sourceElement.originalStyles);
-                            sourceElement.snapped = false;
+                        if (sourceEl.dom._pete && sourceEl.dom._pete.snapped && !o.snapToZone) {
+                            sourceEl.setStyle(sourceEl.dom._pete.originalStyles);
+                            sourceEl.dom._pete.snapped = false;
                         } // Only snap to zone if it hasn't already been snapped.
-                        else if (!sourceElement.snapped && o.snapToZone) {
-                            snapToZone(sourceElement);
+                        else if (/*!sourceEl.dom._pete.snapped && */o.snapToZone) {
+                            snapToZone(sourceEl);
                         }
 
                         // NOTE: If it's already been snapped to zone and is dropped into another snapped zone, don't do
                         // anything above b/c it's already been snapped and has its original styles bound to itself.
                     } else {
-                        document.body.removeChild(dragSource);
+                        body.removeChild(dragProxy.dom);
                     }
                 }
 
@@ -180,41 +190,42 @@ Pete.ux.DropZoneManager = (function () {
             }
         } else {
             // Remove the cloned node from the dom...
-            document.body.removeChild(dragSource);
+            body.removeChild(dragProxy.dom);
         }
 
         // ...and remove the property so the check in the beginning of this method tcob.
-        dragSource = document.onmousemove = document.onselectstart = null;
+        dragProxy = document.onmousemove = document.onselectstart = null;
     }
 
-    function snapToZone(sourceElement) {
+    function snapToZone(sourceEl) {
         var getStyle = Pete.util.getStyle,
+            dom = sourceEl.dom,
             style = {
-                borderTopColor: getStyle(sourceElement, 'border-top-color'),
-                borderTopStyle: getStyle(sourceElement, 'border-top-style'),
-                borderTopWidth: getStyle(sourceElement, 'border-top-width'),
+                borderTopColor: getStyle(dom, 'border-top-color'),
+                borderTopStyle: getStyle(dom, 'border-top-style'),
+                borderTopWidth: getStyle(dom, 'border-top-width'),
 
-                borderRightColor: getStyle(sourceElement, 'border-right-color'),
-                borderRightStyle: getStyle(sourceElement, 'border-right-style'),
-                borderRightWidth: getStyle(sourceElement, 'border-right-width'),
+                borderRightColor: getStyle(dom, 'border-right-color'),
+                borderRightStyle: getStyle(dom, 'border-right-style'),
+                borderRightWidth: getStyle(dom, 'border-right-width'),
 
-                borderBottomColor: getStyle(sourceElement, 'border-bottom-color'),
-                borderBottomStyle: getStyle(sourceElement, 'border-bottom-style'),
-                borderBottomWidth: getStyle(sourceElement, 'border-bottom-width'),
+                borderBottomColor: getStyle(dom, 'border-bottom-color'),
+                borderBottomStyle: getStyle(dom, 'border-bottom-style'),
+                borderBottomWidth: getStyle(dom, 'border-bottom-width'),
 
-                borderLeftColor: getStyle(sourceElement, 'border-left-color'),
-                borderLeftStyle: getStyle(sourceElement, 'border-left-style'),
-                borderLeftWidth: getStyle(sourceElement, 'border-left-width'),
+                borderLeftColor: getStyle(dom, 'border-left-color'),
+                borderLeftStyle: getStyle(dom, 'border-left-style'),
+                borderLeftWidth: getStyle(dom, 'border-left-width'),
 
-                marginTop: getStyle(sourceElement, 'margin-top'),
-                marginRight: getStyle(sourceElement, 'margin-right'),
-                marginBottom: getStyle(sourceElement, 'margin-bottom'),
-                marginLeft: getStyle(sourceElement, 'margin-left')
+                marginTop: getStyle(dom, 'margin-top'),
+                marginRight: getStyle(dom, 'margin-right'),
+                marginBottom: getStyle(dom, 'margin-bottom'),
+                marginLeft: getStyle(dom, 'margin-left')
             };
 
-        sourceElement.snapped = true;
-        sourceElement.style.border = sourceElement.style.margin = 0;
-        sourceElement.originalStyles = style;
+        dom._pete.snapped = true;
+        dom.style.border = dom.style.margin = 0;
+        dom._pete.originalStyles = style;
     }
 
     // Sort the drop zone's sortable elements after drop (NOTE that the sort is dependent upon a developer
@@ -245,14 +256,11 @@ Pete.ux.DropZoneManager = (function () {
     }
 
     return {
-        add: function (v, o) {
+        initDD: function (v, o) {
             return add(v, o || {});
         },
         getDropZones: function () {
             return dropZones;
-        },
-        onMouseUp: function (e) {
-            return onNodeDrop.call(this, e);
         }
     };
 }());
