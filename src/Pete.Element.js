@@ -1403,13 +1403,19 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
             var makeEl = function (dom, id) {
                 var el;
 
+                id = id || dom._pete && dom._pete.ownerId;
+
                 // See if el is cached. If so, we're done.
                 // If not, create it and cache it.
                 if (!(el = Pete.cache[id])) {
-                    el = Pete.cache[id] = Pete.compose(Pete.Element, {
+                    el = Pete.compose(Pete.Element, {
                         dom: dom,
                         id: id
                     });
+
+                    id = el.id;
+
+                    Pete.cache[id] = el;
 
                     // Cache a data object on the HTMLElement where we can store internal library information.
                     if (!dom._pete) {
@@ -1439,13 +1445,11 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
                         return null;
                     }
 
-                    id = el.id;
-
                     // We were passed an HTMLElement.
                     if (dom === el) {
                         // If the Pete.Element has the same id as its dom element, then it must have been given one by the dev.
                         // Note that dom.id will be an empty string if not set.
-                        el = makeEl(dom, dom.id || Pete.id());
+                        el = makeEl(dom, dom.id);
                     }
                     // We were passed a PeteElement.
                     else {

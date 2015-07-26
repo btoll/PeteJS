@@ -219,27 +219,27 @@ Pete.ready(Pete.dom.attachHandler);
 
     /**
      * @function Pete.dom.find
-     * @param {String/HTMLElement/Pete.Element} elem
+     * @param {String/HTMLElement/Pete.Element} el
      * @param {String} selector
      * @return {HTMLElement/Boolean}
-     * @describe <p>This method finds an ancestor element of <code>elem</code> by interrogating each of its parent elements using the passed selector. Uses <code><a href="#jsdoc">Pete.domQuery</a></code> internally.</p><p>Returns either the found dom element or <code>false</code>.</p>
+     * @describe <p>This method finds an ancestor element of <code>el</code> by interrogating each of its parent elements using the passed selector. Uses <code><a href="#jsdoc">Pete.domQuery</a></code> internally.</p><p>Returns either the found dom element or <code>false</code>.</p>
      * @example
 Pete.dom.find("test", "#box3[style$=100px;]");
      */
     //<source>
-    find: function (elem, selector) {
-        if (!elem || !selector) {
+    find: function (el, selector) {
+        if (!el || !selector) {
             throw new Error("Failure to provide arguments in method Pete.dom.find");
         }
 
-        elem = Pete.Element.get(elem, true).parentNode;
+        el = Pete.Element.get(el, true).parentNode;
 
-        while (elem) {
-            if (Pete.domQuery.find(elem, selector)) {
-                return elem;
+        while (el) {
+            if (Pete.domQuery.find(el, selector)) {
+                return el;
             }
 
-            elem = elem.parentNode;
+            el = el.parentNode;
         }
 
         return false;
