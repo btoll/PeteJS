@@ -265,12 +265,14 @@ Pete.DD = (function () {
 
     return {
         $compose: function () {
-            // Only register the global 'mouseup' once.
+            // Only register the global 'mouseup' event once.
             if (!Pete.DD._eventRegistered) {
                 Pete.get(document).on('mouseup', onNodeDrop, this);
                 Pete.DD._eventRegistered = true;
             }
         },
+
+        _eventRegistered: false,
 
         dragZone: function (el, o) {
             return add.call(this, el, {
@@ -285,8 +287,6 @@ Pete.DD = (function () {
                 data: o || {}
             });
         },
-
-        _eventRegistered: false,
 
         getDropZones: function () {
             return dropZones;
