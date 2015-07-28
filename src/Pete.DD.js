@@ -29,7 +29,6 @@ Pete.DD = (function () {
 
             els.forEach(function (elem) {
                 var zone = Pete.Element.get(elem);
-                dropZones[zone.id] = zone;
 
                 // Let the Observer know what events can be subscribed to.
                 zone.subscriberEvents([
@@ -48,7 +47,9 @@ Pete.DD = (function () {
                     }
                 }
 
-                zone.sort = o.sort || false;
+                delete o.subscribe;
+
+                dropZones[zone.id] = Pete.mixin(zone, o);
             });
         } else {
             dropZones.push(Pete.Element.get(v));
@@ -133,8 +134,10 @@ Pete.DD = (function () {
 
         dragProxy.setStyle({
             display: 'block',
-            top: Pete.util.getY(e) + 20 + 'px',
-            left: Pete.util.getX(e) + 10 + 'px'
+            //top: Pete.util.getY(e) + 20 + 'px',
+            //left: Pete.util.getX(e) + 10 + 'px'
+            top: Pete.util.getY(e) + 'px',
+            left: Pete.util.getX(e) + 'px'
         });
     }
 
@@ -161,7 +164,13 @@ Pete.DD = (function () {
                         // Remove the cloned node from the dom...
                         body.removeChild(dragProxy.dom);
                         // ...and re-append the original in the new drop zone.
-                        zoneTarget.appendChild(sourceEl.dom);
+                        if (o.dropProxy) {
+                            zoneTarget.appendChild(dragProxy.dom);
+                            dragProxy.removeClass('Pete_dragging');
+                        } else {
+                            zoneTarget.appendChild(sourceEl.dom);
+                        }
+
                         // Swap out the previous zone owner for the new one.
                         sourceEl.ddOwner = o.id;
 

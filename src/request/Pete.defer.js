@@ -1,3 +1,27 @@
+/**
+ * The AjaxDefer class is a singleton that allows pending Ajax requests to be managed.
+ *
+ * For example, it allows a developer to control when callbacks are invoked for a group of pending requests.
+ * Imagine a scenario where a local operation shouldn't occur until all related requests have been returned.
+ * Ajax doesn't allow for this to be controlled or managed out of the box, and there is no guaranteed order to
+ * the requests that are returned. However, the developer may want this operation to occur only when the last
+ * pending request has returned. AjaxDefer allows for this.
+ *
+ * Requests can be grouped by name. The group name is optional, in which case the name will default to the value
+ * of {@link defaultGroup}. There is no limit to the number of groups that can be created, and the singleton can
+ * be configured so that the grouped request callbacks can fire when each request comes in as usual or batched
+ * until the last one in the group is returned. Further, the {@link wrap} method allows for one or more callbacks
+ * to be fired after the last grouped request has returned. These callbacks can belong to a group by specifying a
+ * group name as a function argument, or it will be called after all the groups have returned if no name is given.
+ *
+ * The {@link ajaxWrap} property allows for more customization. By default, the Connection callbacks will be called
+ * as each request returns from the server. {@link ajaxWrap} will defer these callbacks until after all of the
+ * group's requests have returned. This can be used together with one or more callbacks that are setup using the
+ * {@link wrap} method. Used both internally by the class and as an API, it will mean that any function passed to
+ * it will be called when the group it belongs to has completely returned (or after all groups have returned if
+ * no name is given).
+ *
+ */
 Pete.defer = Pete.compose(Pete.ajax, {
     /**
      * @event beforecallback
