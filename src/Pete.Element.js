@@ -320,7 +320,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
                         item.parent = dom;
                     }
 
-                    this.create(item);
+                    Pete.Element.create(item);
                 }
             }
 
@@ -1433,8 +1433,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
             };
 
             return function (el, root, returnDOM) {
-                var me = this,
-                    n, el, id, dom;
+                var n, el, id, dom;
 
                 if (root && typeof root === 'boolean') {
                     returnDOM = root;
@@ -1482,8 +1481,8 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
                         //
                         // TODO: Using Element.get here causes a Too Much Recursion error.
                         // Note we don't cache Composite objects!
-                        el = Pete.compose(me, {
-                            dom: me.gets(el, root || true, true)[0]
+                        el = Pete.compose(Pete.Element, {
+                            dom: Pete.Element.gets(el, root || true, true)[0]
                         });
                     }
                 }
@@ -1538,4 +1537,9 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
         //</source>
     };
 }()));
+
+// Let's create some aliases.
+Pete.create = Pete.Element.create;
+Pete.get = Pete.Element.get;
+Pete.gets = Pete.Element.gets;
 
