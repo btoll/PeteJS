@@ -480,10 +480,10 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
 
             return function (el) {
                 if (!flyweight[symbol]) {
-                  flyweight[symbol] = Pete.compose(this);
+                  flyweight[symbol] = Pete.compose(Pete.Element);
                 }
 
-                flyweight[symbol].dom = this.get(el, true);
+                flyweight[symbol].dom = Pete.get(el, true);
                 return flyweight[symbol];
             };
         }()),
@@ -1560,6 +1560,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
 
 // Let's create some aliases.
 Pete.create = Pete.Element.create;
+Pete.fly = Pete.Element.fly;
 Pete.get = Pete.Element.get;
 Pete.gets = Pete.Element.gets;
 
