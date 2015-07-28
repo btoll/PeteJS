@@ -350,19 +350,32 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
         //</source>
 
         /**
+         * @function Pete.Element.contains
+         * @param {PeteElement/HTMLElement} el
+         * @return {Boolean}
+         * @describe
+         <p>https://developer.mozilla.org/en-US/docs/Web/API/Node/contains</p>
+         */
+        //<source>
+        contains: function (el) {
+            var dom = Pete.getDom(el);
+            return this.dom.contains(dom);
+        },
+
+        /**
          * @function Pete.Element.disable
          * @param {Boolean} cache (Optional)
          * @return {Pete.Element}
          * @describe
-    <p>If <code>cache</code> is true, a reference to each <code>HTMLElement</code> will be stored in <code>Pete.disabled</code>. Each element in the cache can then be accessed by its id attribute value. Usually, this isn't necessary and re-enabling the element (<code><a href="#jsdoc">Pete.Element.enable</a></code>) will remove the reference from the cache.</p>
-    <p>Important: If disabling links, a <code>disabled</code> class is expected. The default class resides in <code>jslite.css</code> but can be overridden by a user-defined stylesheet.</p>
+        <p>If <code>cache</code> is true, a reference to each <code>HTMLElement</code> will be stored in <code>Pete.disabled</code>. Each element in the cache can then be accessed by its id attribute value. Usually, this isn't necessary and re-enabling the element (<code><a href="#jsdoc">Pete.Element.enable</a></code>) will remove the reference from the cache.</p>
+        <p>Important: If disabling links, a <code>disabled</code> class is expected. The default class resides in <code>jslite.css</code> but can be overridden by a user-defined stylesheet.</p>
          * @example
-    var cLis = Pete.Element.gets("#theList li");
-    cLis.disable("disabled");
+        var cLis = Pete.Element.gets("#theList li");
+        cLis.disable("disabled");
 
-    //a class name is not needed when disabling <input>s;
-    var cInputs = Pete.Element.gets("#theForm input");
-    cInputs.disable();
+        //a class name is not needed when disabling <input>s;
+        var cInputs = Pete.Element.gets("#theForm input");
+        cInputs.disable();
          */
         //<source>
         disable: function (cache) {
@@ -775,38 +788,45 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
          * @function Pete.Element.on
          * @param {String/Array} type The type of event, i.e. <code>click</code> or <code>change</code> or <code>[&quot;click&quot;, &quot;change&quot;]</code>
          * @param {Function} fn The callback function
+         * @param {Object} scope The scope in which the callback is called (Optional)
          * @return {None}
          * @describe <p>Binds one or more event listeners to the element and adds it/them to the cache. If listening to more than one type of event, pass the events as an array as the first argument.</p>
          * @example
-    var func = function (e) {
-      alert("Hello, World!");
-      e.preventDefault();
-    };
+        var func = function (e) {
+          alert("Hello, World!");
+          e.preventDefault();
+        };
 
-    var cLinks = Pete.Element.gets("#menubar a");
-    cLinks.on("click", func);
+        var cLinks = Pete.Element.gets("#menubar a");
+        cLinks.on("click", func);
 
-    - or -
-    cLinks.on(["click", "mouseover"], func); //pass multiple event to listen to as an array;
+        - or -
+        cLinks.on(["click", "mouseover"], func); //pass multiple event to listen to as an array;
          */
         //<source>
-        on: function (type, fn) {
+        on: function (type, fn, scope) {
+            var dom = this.dom,
+                id = dom._pete.ownerId;
+
+            scope = scope || this;
+
             if (typeof type === "string") {
                 type = [type];
             }
 
             type.forEach(function (type) {
-                var dom = this.dom;
+                fn = fn.bind(scope);
 
                 Pete.dom.event.add(dom, type, fn);
 
                 // Create the object for each id.
-                var o = null, arr = [];
+                var o = null,
+                    arr = [];
 
-                if (!Pete.events[dom.id]) {
-                    Pete.events[dom.id] = {};
+                if (!Pete.events[id]) {
+                    Pete.events[id] = {};
                 }
-                o = Pete.events[dom.id];
+                o = Pete.events[id];
 
                 // Within each id object store the handler for each event type.
                 if (!o[type]) {
@@ -822,7 +842,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
                         o[type].push(fn);
                     }
                 }
-            }.bind(this));
+            }.bind(scope));
         },
         //</source>
 
@@ -1202,7 +1222,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
                 var dom = me.dom;
 
                 Pete.dom.event.remove(dom, type, fn);
-                delete Pete.events[dom.id][type];
+                delete Pete.events[dom._pete.ownerId][type];
             });
         },
         //</source>
