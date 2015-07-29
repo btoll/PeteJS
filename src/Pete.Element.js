@@ -806,7 +806,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
         //<source>
         on: function (type, fn, scope) {
             var dom = this.dom,
-                id = dom._pete.ownerId;
+                id = dom.id || dom._pete.ownerId;
 
             scope = scope || this;
 
