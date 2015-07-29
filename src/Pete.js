@@ -326,16 +326,17 @@ Pete.mixin(Pete, {
     /**
      * @function Pete.makeArray
      * @param {Object} o
+     * @param {Number} start (Optional) The index at which to begin slicing
      * @return {Array}
      * @describe <p>Converts a collection of nodes or the <code>arguments</code> object into a true array.</p>
-<p>A tip of the hat to the Prototype library.</p>
-<p>Note: Nicholas Zakas <a href="http://www.nczonline.net/blog/2007/12/13/ie-com-reers-its-ugly-head/" rel="external">has a good blog post</a> about why IE doesn't respect <code>Array.prototype.slice</code>.</p>
-<p>This is to transfrom a collection into an array. If you want to cast an object to an array, please see <code><a href="#jsdoc">Pete.toArray</a></code>.</p>
+    <p>A tip of the hat to the Prototype library.</p>
+    <p>Note: Nicholas Zakas <a href="http://www.nczonline.net/blog/2007/12/13/ie-com-reers-its-ugly-head/" rel="external">has a good blog post</a> about why IE doesn't respect <code>Array.prototype.slice</code>.</p>
+    <p>This is to transfrom a collection into an array. If you want to cast an object to an array, please see <code><a href="#jsdoc">Pete.toArray</a></code>.</p>
      */
     //<source>
-    makeArray: function (o) {
+    makeArray: function (o, start) {
         if (!Pete.isIE) {
-            return Array.prototype.slice.apply(o);
+            return Array.prototype.slice.call(o, start);
         }
 
         var len = o.length || 0,
@@ -344,6 +345,10 @@ Pete.mixin(Pete, {
         if (o && o.length) {
             while (len--) {
                 arr[len] = o[len];
+
+                if (len === start) {
+                    break;
+                }
             }
         }
 
@@ -426,18 +431,6 @@ Pete.globalSymbol = 'Pete';
 //</source>
 
 /**
-* @property Pete.tabClasses
-* @type Object
-* @describe <p>Constant. The class names that all Tab objects use.</p>
-*/
-//<source>
-Pete.tabClasses = {
-  tabs: Pete.globalSymbol + '_Tabs', //the class name on the containing div;
-  tab: Pete.globalSymbol + '_Tab' //the class name for each tab;
-};
-//</source>
-
-/**
 * @property Pete.tags
 * @type RegExp
 * @describe <p>This contains all possible HTML tags. Is used by <code><a href="#jsdoc">Pete.domQuery</a></code> and <code><a href="#jsdoc">Pete.get.dom</a></code>. Is used internally but can be overwritten for any custom needs.</p>
@@ -446,27 +439,18 @@ Pete.tabClasses = {
 Pete.tags = /^(?:\*|a|abbr|acronym|address|applet|area|b|base|basefont|bdo|big|blockquote|body|br|button|caption|center|cite|code|col|colgroup|dd|del|dfn|dir|div|dl|dt|em|fieldset|font|footer|form|frame|frameset|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|iframe|img|input|ins|isindex|kbd|label|legend|li|link|map|menu|meta|noframes|noscript|object|ol|optgroup|option|p|param|pre|q|s|samp|script|section|select|small|span|strike|strong|style|sub|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|tt|u|ul|var)$/i;
 //</source>
 
-/**
-* @property Pete.tooltipClass
-* @type String
-* @describe <p>Constant. The class name that all Tooltip objects use.</p>
-*/
-//<source>
-Pete.tooltipClass = Pete.globalSymbol + "_Tooltip";
-//</source>
-
 (function () {
     var ua = navigator.userAgent.toLocaleLowerCase(),
-        isStrict = document.compatMode === "CSS1Compat",
-        isOpera = ua.indexOf("opera") > -1,
+        isStrict = document.compatMode === 'CSS1Compat',
+        isOpera = ua.indexOf('opera') > -1,
         isSafari = (/webkit|khtml/).test(ua),
         isSafari3 = isSafari && ua.indexOf('webkit/5') !== -1,
-        isiPhone = ua.indexOf("iphone") > -1,
+        isiPhone = ua.indexOf('iphone') > -1,
         //isIE = /*@cc_on!@*/false, //IE conditional compilation;
-        isIE = !isOpera && ua.indexOf("msie") > -1,
-        isIE6 = !isOpera && ua.indexOf("msie 6") > -1,
-        isIE7 = !isOpera && ua.indexOf("msie 7") > -1,
-        isIE8 = !isOpera && ua.indexOf("msie 8") > -1;
+        isIE = !isOpera && ua.indexOf('msie') > -1,
+        isIE6 = !isOpera && ua.indexOf('msie 6') > -1,
+        isIE7 = !isOpera && ua.indexOf('msie 7') > -1,
+        isIE8 = !isOpera && ua.indexOf('msie 8') > -1;
 
     Pete.mixin(Pete, {
         /**
@@ -545,7 +529,6 @@ Pete.tooltipClass = Pete.globalSymbol + "_Tooltip";
 
 // For internal use only, can be modified via Pete#flush.
 // TODO: make these private, only accessible via a closure?
-//
 (function () {
     Pete.mixin(Pete, {
         cache: {},
