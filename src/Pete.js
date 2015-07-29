@@ -74,7 +74,7 @@ Pete.mixin(Pete, {
      */
     //<source>
     compose: function (proto) {
-        var args = Pete.makeArray(arguments).slice(1),
+        var args = Pete.makeArray(arguments, 1),
             obj, i, len;
 
         if (Object.create) {

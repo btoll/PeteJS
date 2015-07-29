@@ -23,7 +23,7 @@ Pete.DD = (function () {
         var me = this,
             els = [],
             data = cfg.data,
-            doc = Pete.Element.get(document),
+            doc = Pete.get(document),
             body = document.body,
             ev, subscribe;
 
@@ -31,11 +31,11 @@ Pete.DD = (function () {
             if (v.elements && v.elements.length > 0) {
                 els = v.elements;
             } else {
-                els = [Pete.Element.get(v, true)];
+                els = [Pete.get(v, true)];
             }
 
             els.forEach(function (dom) {
-                var zone = Pete.Element.get(dom),
+                var zone = Pete.get(dom),
                     el = Pete.get(dom);
 
                 // Let the Observer know what events can be subscribed to.
@@ -63,7 +63,7 @@ Pete.DD = (function () {
                 el.on('mouseout', onMouseOut, el, me);
             });
         } else {
-            dropZones.push(Pete.Element.get(v));
+            dropZones.push(Pete.get(v));
         }
     }
 
@@ -88,10 +88,22 @@ Pete.DD = (function () {
         if (!dragProxy) {
             dragProxy = Pete.compose(Pete.Element, config);
         } else {
-            dragProxy.dom = config.dom;
+            Pete.mixin(dragProxy, config);
         }
 
         return dragProxy;
+    }
+
+    function getSourceEl(config) {
+        if (!sourceEl) {
+            sourceEl = Pete.compose(Pete.Element, Pete.mixin({
+                id: 'Pete_sourceEl'
+            }, config));
+        } else {
+            Pete.mixin(sourceEl, config);
+        }
+
+        return sourceEl;
     }
 
     function onMouseDown(e, dd) {
@@ -113,12 +125,10 @@ Pete.DD = (function () {
             }
 
             if (target) {
-                sourceEl = Pete.compose(Pete.Element, {
+                sourceEl = getSourceEl({
                     dom: target,
-                    id: 'Pete_sourceEl'
+                    ddOwner: ownerId
                 });
-
-                sourceEl.ddOwner = ownerId;
 
                 dragProxy = getDragProxy({
                     // Clone the target node and any children.
@@ -161,7 +171,7 @@ Pete.DD = (function () {
     function onMouseOut(e) {
         if (dragProxy) {
             dropZoneTarget = null;
-            Pete.Element.fly(dragProxy).removeClass('Pete_overDropZone');
+            Pete.fly(dragProxy).removeClass('Pete_overDropZone');
         }
     }
 
@@ -175,13 +185,13 @@ Pete.DD = (function () {
             // Only continue if the ownerId is a participating dropZone.
             if (sourceEl.ddOwner !== ownerId && dropZones[ownerId]) {
                 dropZoneTarget = ownerId;
-                Pete.Element.fly(dragProxy).addClass('Pete_overDropZone');
+                Pete.fly(dragProxy).addClass('Pete_overDropZone');
             }
         }
     }
 
     function onNodeDrop(e) {
-        var doc = Pete.Element.get(document),
+        var doc = Pete.get(document),
             body = document.body,
             o;
 
@@ -192,8 +202,7 @@ Pete.DD = (function () {
         // If dropZoneTarget is not null (from a no-drop area) or within the same drop zone.
         if (dropZoneTarget && dropZoneTarget.indexOf(sourceEl.ddOwner) === -1) {
             //zoneTarget = Pete.getDom(dropZoneTarget);
-            zoneTarget = Pete.Element.get(dropZoneTarget, true);
-
+            zoneTarget = Pete.get(dropZoneTarget, true);
             o = dropZones[dropZoneTarget];
 
             if (o) {
@@ -252,7 +261,7 @@ Pete.DD = (function () {
             return (typeof v.sortOrder === 'number');
         }),
         frag = document.createDocumentFragment(),
-        dz = Pete.Element.get(dropZone);
+        dz = Pete.get(dropZone);
 
         // Sort all nodes in this drop zone by their sort order property.
         arr.sort(function (a, b) {

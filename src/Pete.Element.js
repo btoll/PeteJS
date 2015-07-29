@@ -1428,6 +1428,11 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
             var makeEl = function (dom, id) {
                 var el;
 
+                // We give up if the el doesn't have an id and there's no dom element in the document.
+                if (!id && !dom) {
+                    return null;
+                }
+
                 id = id || dom._pete && dom._pete.ownerId;
 
                 // See if el is cached. If so, we're done.
@@ -1498,7 +1503,9 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
                         // since we've now determined that the passed string is a DOM id.
                         //
                         // If the Pete.Element has the same id as its dom element, then it must have been given one by the dev.
-                        el = makeEl(Pete.getDom(el, root), el);
+                        if (!(el = makeEl(Pete.getDom(el, root), el))) {
+                            return null;
+                        }
                     } else {
                         // This allows for passing a selector to the domQuery engine (via Pete.Element.gets).
                         // Pass along a third argument in case root is also passed.
