@@ -11,18 +11,18 @@ Pete.dom = {
      * @function Pete.dom.attachHandler
      * @param {Array/String} elem
      * @return {None}
-     * @describe <p>Pass one or more methods (usually event handlers) as elements of an array, i.e., <code>["events.doThis", "global.doThat"]</code> or singularly as a <code>String</code>.</p><p>Must be objects of the <code>Pete</code> global symbol.</p>
+     * @describe <p>Pass one or more methods (usually event handlers) as elements of an array, i.e., <code>['events.doThis', 'global.doThat']</code> or singularly as a <code>String</code>.</p><p>Must be objects of the <code>Pete</code> global symbol.</p>
      * @example
-Pete.dom.attachHandler([
-  'global.drawNavbarList',
-  'events.addColumn',
-  'events.moveDownColumn',
-  'events.moveUpColumn',
-  'events.subtractColumn',
-  'superglobal.drawViewsList'
-]);
+    Pete.dom.attachHandler([
+      'global.drawNavbarList',
+      'events.addColumn',
+      'events.moveDownColumn',
+      'events.moveUpColumn',
+      'events.subtractColumn',
+      'superglobal.drawViewsList'
+    ]);
 
-Pete.ready(Pete.dom.attachHandler);
+    Pete.ready(Pete.dom.attachHandler);
      */
     //<source>
     attachHandler: function (elem) {
@@ -208,7 +208,7 @@ Pete.ready(Pete.dom.attachHandler);
                     var handlerId = element._handlers[i];
                     var h = w._allHandlers[handlerId];
 
-                    element.detachEvent("on" + eventType, h.wrappedHandler);
+                    element.detachEvent('on' + eventType, h.wrappedHandler);
                     element._handlers.splice(i, 1);
                     delete w._allHandlers[handlerId];
                 }
@@ -222,14 +222,14 @@ Pete.ready(Pete.dom.attachHandler);
      * @param {String/HTMLElement/Pete.Element} el
      * @param {String} selector
      * @return {HTMLElement/Boolean}
-     * @describe <p>This method finds an ancestor element of <code>el</code> by interrogating each of its parent elements using the passed selector. Uses <code><a href="#jsdoc">Pete.domQuery</a></code> internally.</p><p>Returns either the found dom element or <code>false</code>.</p>
+     * @describe <p>This method finds an ancestor element of <code>el</code> by interrogating each of its parent elements using the passed selector. Uses <code><a href='#jsdoc'>Pete.domQuery</a></code> internally.</p><p>Returns either the found dom element or <code>false</code>.</p>
      * @example
-Pete.dom.find("test", "#box3[style$=100px;]");
+    Pete.dom.find('test', '#box3[style$=100px;]');
      */
     //<source>
     find: function (el, selector) {
         if (!el || !selector) {
-            throw new Error("Failure to provide arguments in method Pete.dom.find");
+            throw new Error('Failure to provide arguments in method Pete.dom.find');
         }
 
         el = Pete.Element.get(el, true).parentNode;
@@ -252,7 +252,7 @@ Pete.dom.find("test", "#box3[style$=100px;]");
      * @param {HTMLElement} targetElement
      * @return {None}
      * @describe <p>Inserts <code>newElement</code> after <code>targetElement</code> in the DOM.</p>
-<p>Use this helper method when not wanting to instantiate a <code><a href="#jsdoc">Pete.Element</a></code> and thereby invoking <code><a href="#jsdoc">Pete.Element.after</a></code>.</p>
+    <p>Use this helper method when not wanting to instantiate a <code><a href='#jsdoc'>Pete.Element</a></code> and thereby invoking <code><a href='#jsdoc'>Pete.Element.after</a></code>.</p>
      */
     //<source>
     insertAfter: function (newElement, targetElement) {
@@ -274,34 +274,34 @@ Pete.dom.find("test", "#box3[style$=100px;]");
      * @return {HTMLElement}
      * @describe <p>Easily allows for inserting HTML in the document tree.</p>
      * @example
-Example:
+    Example:
 
-<ul>
-  <li>one</li>
-  <li>two</li>
-  <li>three</li>
-  <li>four</li>
-  <li>five</li>
-</ul>
+    <ul>
+      <li>one</li>
+      <li>two</li>
+      <li>three</li>
+      <li>four</li>
+      <li>five</li>
+    </ul>
 
-What if you need to append text to one of the list items?  innerHTML kills an element's
-children, and performing an operation to first retrieve the child node and then append
-the new text isn't convenient.
+    What if you need to append text to one of the list items?  innerHTML kills an element's
+    children, and performing an operation to first retrieve the child node and then append
+    the new text isn't convenient.
 
-var html = " <strong>hundred</strong>";
-Pete.dom.insertHtml("beforeEnd", document.getElementsByTagName("li")[1], html);
+    var html = ' <strong>hundred</strong>';
+    Pete.dom.insertHtml('beforeEnd', document.getElementsByTagName('li')[1], html);
 
-So the list becomes:
+    So the list becomes:
 
-<ul>
-  <li>one</li>
-  <li>two <strong>hundred</strong></li>
-  <li>three</li>
-  <li>four</li>
-  <li>five</li>
-</ul>
+    <ul>
+      <li>one</li>
+      <li>two <strong>hundred</strong></li>
+      <li>three</li>
+      <li>four</li>
+      <li>five</li>
+    </ul>
 
-This is a simple example but the concept can easily be grasped.
+    This is a simple example but the concept can easily be grasped.
      */
     //<source>
     insertHtml: function (where, elem, html){
@@ -380,10 +380,10 @@ This is a simple example but the concept can easily be grasped.
      * @return {Boolean}
      * @describe <p>A handy way to quickly determine if an element is a textbox or a textarea.  Useful for string trimming and validation.</p>
      * @example
-var oDom = Pete.Element.get(this, true);
-if (!Pete.dom.isTextBox(oDom)) return;
-oDom.value = Pete.trim(oDom.value);
-return this;
+    var oDom = Pete.Element.get(this, true);
+    if (!Pete.dom.isTextBox(oDom)) return;
+    oDom.value = Pete.trim(oDom.value);
+    return this;
      */
     //<source>
     isTextBox: function (elem) {
@@ -400,7 +400,7 @@ return this;
      * @param {String/Array} toRemove Can be either a single HTMLElement to remove or an Array of HTMLElements
      * @return {HTMLElement/Array} - One or more <code>HTMLElements</code>
      * @describe <p>Removes one or more <code>HTMLElements</code> from the DOM and returns the removed element(s).</p>
-<p>Use this helper method when not wanting to instantiate a <code><a href="#jsdoc">Pete.Element</a></code> and thereby invoking <code><a href="#jsdoc">Pete.Element.remove</a></code>.</p>
+    <p>Use this helper method when not wanting to instantiate a <code><a href='#jsdoc'>Pete.Element</a></code> and thereby invoking <code><a href='#jsdoc'>Pete.Element.remove</a></code>.</p>
      * @example
 var oElems = Pete.dom.remove('test');
 

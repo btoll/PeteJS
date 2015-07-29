@@ -789,6 +789,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
          * @param {String/Array} type The type of event, i.e. <code>click</code> or <code>change</code> or <code>[&quot;click&quot;, &quot;change&quot;]</code>
          * @param {Function} fn The callback function
          * @param {Object} scope The scope in which the callback is called (Optional)
+         * @param {varargs} args Any number of additional arguments (Optional)
          * @return {None}
          * @describe <p>Binds one or more event listeners to the element and adds it/them to the cache. If listening to more than one type of event, pass the events as an array as the first argument.</p>
          * @example
@@ -804,9 +805,10 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
         cLinks.on(["click", "mouseover"], func); //pass multiple event to listen to as an array;
          */
         //<source>
-        on: function (type, fn, scope) {
+        on: function (type, fn, scope/*varargs*/) {
             var dom = this.dom,
-                id = dom.id || dom._pete.ownerId;
+                id = dom.id || dom._pete.ownerId,
+                args = Array.prototype.slice.call(arguments, 3);
 
             scope = scope || this;
 
@@ -815,7 +817,9 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
             }
 
             type.forEach(function (type) {
-                fn = fn.bind(scope);
+                // Push the scope onto the front of the stack so it's the first.
+                args.unshift(scope);
+                fn = fn.bind.apply(fn, args);
 
                 Pete.dom.event.add(dom, type, fn);
 
