@@ -340,10 +340,12 @@ fn(); //logs 'jupiter';
  */
 //<source>
 Function.prototype.bind = function (context) {
-    var fn = this;
+    var fn = this,
+        makeArray = Pete.makeArray,
+        args = makeArray(arguments, 1);
 
     return function () {
-        fn.apply(context, arguments);
+        fn.apply(context, makeArray(arguments).concat(args));
     };
 };
 //</source>
