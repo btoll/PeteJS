@@ -1,3 +1,5 @@
+// TODO: Leaks!
+//
 // Notes
 //
 // initDD   = el can be both drag and drop zone
@@ -32,8 +34,9 @@ Pete.DD = (function () {
                 els = [Pete.Element.get(v, true)];
             }
 
-            els.forEach(function (el) {
-                var zone = Pete.Element.get(el);
+            els.forEach(function (dom) {
+                var zone = Pete.Element.get(dom),
+                    el = Pete.get(dom);
 
                 // Let the Observer know what events can be subscribed to.
                 zone.subscriberEvents([
@@ -54,82 +57,14 @@ Pete.DD = (function () {
 
                 Pete.mixin(zone, data);
                 addToZone(cfg.type, zone);
+
+                el.on('mousedown', onMouseDown, el, me);
+                el.on('mouseover', onMouseOver, el, me);
+                el.on('mouseout', onMouseOut, el, me);
             });
         } else {
             dropZones.push(Pete.Element.get(v));
         }
-
-        v.on('mousedown', function (e) {
-            var dom = this.dom,
-                target = e.target,
-                ownerId = dom._pete.ownerId,
-                dragZone = dragZones[ownerId],
-                dragElFound = false,
-                dragCls;
-
-            // Only continue if the ownerId is a participating dragZone.
-            if (dragZone) {
-                // `me` is the current DD object.
-                dragCls = me.dragCls;
-
-                // If the target doesn't have the class do an ancestor search upwards.
-                if (!Pete.get(target).hasClass(dragCls)) {
-                    target = Pete.dom.find(target, '.' + dragCls);
-                }
-
-                if (target) {
-                    sourceEl = Pete.compose(Pete.Element, {
-                        dom: target,
-                        id: 'Pete_sourceEl'
-                    });
-
-                    sourceEl.ddOwner = ownerId;
-
-                    dragProxy = getDragProxy({
-                        // Clone the target node and any children.
-                        dom: target.cloneNode(true)
-                    });
-
-                    // Concatenate b/c we don't want to overwrite any class that may already be bound to it.
-                    dragProxy.addClass('Pete_dragging');
-                    body.appendChild(dragProxy.dom);
-
-                    doc.on('mousemove', onMouseMove);
-                }
-
-                // Cancel out any text selections.
-                body.focus();
-
-                // TODO: if (Pete.isIE) ...
-                doc.on('selectstart', onSelectStart);
-            }
-
-            e.preventDefault();
-        });
-
-        v.on('mouseover', function (e) {
-            var dom = e.target,
-                ownerId;
-
-            if (dragProxy) {
-                ownerId = dom._pete.ownerId;
-
-                // Only continue if the ownerId is a participating dropZone.
-                if (sourceEl.ddOwner !== ownerId && dropZones[ownerId]) {
-                    dropZoneTarget = ownerId;
-                    Pete.Element.fly(dragProxy).addClass('Pete_overDropZone');
-                }
-            }
-        });
-
-        // NOTE: It's very important to listen to this event so onNodeDrop knows when it can remove
-        // the cloned node and when to remove the class when the node is over a no-drop area.
-        v.on('mouseout', function (e) {
-            if (dragProxy) {
-                dropZoneTarget = null;
-                Pete.Element.fly(dragProxy).removeClass('Pete_overDropZone');
-            }
-        });
     }
 
     function addToZone(type, el){
@@ -159,6 +94,54 @@ Pete.DD = (function () {
         return dragProxy;
     }
 
+    function onMouseDown(e, dd) {
+        var dom = this.dom,
+            target = e.target,
+            ownerId = dom._pete.ownerId,
+            dragZone = dragZones[ownerId],
+            doc = Pete.get(document),
+            body = document.body,
+            dragElFound = false,
+            // `dd` is the current DD object.
+            dragCls = dd.dragCls;
+
+        // Only continue if the ownerId is a participating dragZone.
+        if (dragZone) {
+            // If the target doesn't have the class do an ancestor search upwards.
+            if (!Pete.get(target).hasClass(dragCls)) {
+                target = Pete.dom.find(target, '.' + dragCls);
+            }
+
+            if (target) {
+                sourceEl = Pete.compose(Pete.Element, {
+                    dom: target,
+                    id: 'Pete_sourceEl'
+                });
+
+                sourceEl.ddOwner = ownerId;
+
+                dragProxy = getDragProxy({
+                    // Clone the target node and any children.
+                    dom: target.cloneNode(true)
+                });
+
+                // Concatenate b/c we don't want to overwrite any class that may already be bound to it.
+                dragProxy.addClass('Pete_dragging');
+                body.appendChild(dragProxy.dom);
+
+                doc.on('mousemove', onMouseMove);
+            }
+
+            // Cancel out any text selections.
+            body.focus();
+
+            // TODO: if (Pete.isIE) ...
+            doc.on('selectstart', onSelectStart);
+        }
+
+        e.preventDefault();
+    }
+
     function onMouseMove(e) {
         e = e || window.event;
 
@@ -170,6 +153,30 @@ Pete.DD = (function () {
                 top: Pete.util.getY(e) + 'px',
                 left: Pete.util.getX(e) + 'px'
             });
+        }
+    }
+
+    // NOTE: It's very important to listen to this event so onNodeDrop knows when it can remove
+    // the cloned node and when to remove the class when the node is over a no-drop area.
+    function onMouseOut(e) {
+        if (dragProxy) {
+            dropZoneTarget = null;
+            Pete.Element.fly(dragProxy).removeClass('Pete_overDropZone');
+        }
+    }
+
+    function onMouseOver(e) {
+        var dom = e.target,
+            ownerId;
+
+        if (dragProxy) {
+            ownerId = dom._pete.ownerId;
+
+            // Only continue if the ownerId is a participating dropZone.
+            if (sourceEl.ddOwner !== ownerId && dropZones[ownerId]) {
+                dropZoneTarget = ownerId;
+                Pete.Element.fly(dragProxy).addClass('Pete_overDropZone');
+            }
         }
     }
 
