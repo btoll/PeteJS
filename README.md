@@ -4,7 +4,7 @@ Pete is all of the following things.
 
 + A recursive acronym (`Pete for the Ethical Treatment of Everything`).
 
-+ A JavaScript library that uses only prototypal inheritance and avoids any classical inheritance sugar.
++ A composable JavaScript library.
 
 What browsers are supported?
 + Chrome, Firefox, Safari, Opera 12+ and IE 8+.
