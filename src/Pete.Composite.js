@@ -69,6 +69,15 @@
 
             elements.forEach(function (dom) {
                 el.dom = dom;
+
+                // TODO: Better way?
+                // We really do our best to not touch any object we don't own, but in this case we have
+                // to stamp on an id (and it's better then creating a _pete object but the Composite or
+                // the Fly isn't the owner).
+                if (!dom.id && !dom._pete) {
+                    dom.id = Pete.id();
+                }
+
                 Element[fn].apply(el, args);
             });
 
