@@ -368,7 +368,7 @@ foobar("test");
 //<source>
 Function.prototype.defaults = function () {
     var func = this,
-        arguments = args,
+        args = arguments,
         arr;
 
     if (func.length < args.length) {
