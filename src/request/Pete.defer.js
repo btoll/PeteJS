@@ -22,6 +22,9 @@
  * no name is given).
  *
  */
+
+"use strict";
+
 Pete.defer = Pete.compose(Pete.ajax, {
     /**
      * @event beforecallback

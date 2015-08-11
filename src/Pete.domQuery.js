@@ -7,6 +7,8 @@
  *
  */
 
+"use strict";
+
 /**
  * @function domQuery
  * @param {String} sSelector

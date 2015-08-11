@@ -7,6 +7,8 @@
  *
  */
 
+"use strict";
+
 /**
  * @function Template
  * @param {String} html A tokenized string of HTML that will define the template

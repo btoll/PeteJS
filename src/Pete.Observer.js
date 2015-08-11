@@ -7,6 +7,7 @@
  *
  */
 
+"use strict";
 
 /**
  * @function Observer

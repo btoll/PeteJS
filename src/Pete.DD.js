@@ -7,6 +7,8 @@
 // dropZone = el can only be a dropzone, it cannot initiate drags
 //
 // If a dragCls is not explicitly defined then any dom element can be a drag target.
+"use strict";
+
 Pete.DD = (function () {
     var i = 0,
         dragZones = {},

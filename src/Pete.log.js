@@ -7,6 +7,8 @@
  *
  */
 
+"use strict";
+
 // This is designed to behave like FF's console.log().
 
 /**

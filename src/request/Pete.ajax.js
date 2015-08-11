@@ -6,6 +6,9 @@
  * and GPL (GPL-LICENSE.txt) licenses.
  *
  */
+
+"use strict";
+
 Pete.ajax = Pete.compose(Pete.Observer, (function () {
     /**
      * @property defaults

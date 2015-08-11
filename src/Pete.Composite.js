@@ -10,6 +10,8 @@
 // Pete.Composite 'inherits' each function from Pete.Element's prototype object.
 // Note that each 'inherited' function will return Pete.Composite.invoke() which
 // will call each function as a method of Pete.Element.
+"use strict";
+
 (function () {
     var Element = Pete.Element,
         proto = {},

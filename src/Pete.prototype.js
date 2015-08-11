@@ -7,6 +7,8 @@
  *
  */
 
+"use strict";
+
 /**
  * @function Array.prototype.contains
  * @param {Mixed} v

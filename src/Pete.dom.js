@@ -6,6 +6,8 @@
  * and GPL (GPL-LICENSE.txt) licenses.
  *
  */
+"use strict";
+
 Pete.dom = {
     /**
      * @function Pete.dom.attachHandler

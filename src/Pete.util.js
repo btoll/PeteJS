@@ -6,6 +6,9 @@
  * and GPL (GPL-LICENSE.txt) licenses.
  *
  */
+
+"use strict";
+
 Pete.util = (function () {
     var reAddCommas = /(\d+)(\d{3})/,
         reCamelCase = /([a-zA-Z0-9])([a-zA-Z0-9]*)[_|\-|\.|\s]([a-zA-Z0-9])/g,

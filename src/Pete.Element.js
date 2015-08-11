@@ -7,6 +7,8 @@
  *
  */
 
+"use strict";
+
 /**
 * @function Element
 * @param None

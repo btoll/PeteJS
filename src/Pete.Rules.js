@@ -7,6 +7,8 @@
  *
  */
 
+"use strict";
+
 /**
  * @function Rules
  * @param {None}
