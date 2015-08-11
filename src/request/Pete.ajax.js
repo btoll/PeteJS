@@ -95,7 +95,7 @@ Pete.ajax = Pete.compose(Pete.Observer, (function () {
 
             // If the specified type is 'script', execute the returned text response as if it were javascript.
             if (options.data === 'json') {
-                return eval('(' + r.responseText + ')');
+                return JSON.parse(r.responseText);
             }
 
             // Determine if some form of xml was returned from the server.
