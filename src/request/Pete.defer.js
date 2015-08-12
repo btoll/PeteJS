@@ -54,7 +54,8 @@ Pete.defer = Pete.compose(Pete.ajax, {
     data: {},
 
     doCallbacks: function (request) {
-        var me = this;
+        var me = this,
+            callbacks, callback;
 
         // Note that request will refer to the last returned request.
         //if (me.fire('completed', me, request) !== false) {

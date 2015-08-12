@@ -195,7 +195,7 @@ Pete.DD = (function () {
     function onNodeDrop(e) {
         var doc = Pete.get(document),
             body = document.body,
-            o;
+            zoneTarget, o, el;
 
         if (!dragProxy) {
             return;

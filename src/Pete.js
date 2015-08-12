@@ -150,25 +150,32 @@ Pete.mixin(Pete, {
      */
     //<source>
     deepCopy: function (orig) {
-        var o, i, len;
+        var o, i, v, len, prop;
 
-        if (orig instanceof Array) { //arrays are handled differently than objects;
+        // Arrays are handled differently than objects.
+        if (orig instanceof Array) {
             o = [];
+
             for (i = 0, len = orig.length; i < len; i++) {
                 v = orig[i];
-                if (v instanceof Object) { //could be an array or an object;
-                    o.push(arguments.callee(v));
+
+                // Could be an array or an object.
+                if (v instanceof Object) {
+                    o.push(Pete.deepCopy(v));
                 } else {
                     o.push(v);
                 }
             }
         } else {
             o = {};
-            for (var prop in orig) {
+
+            for (prop in orig) {
                 if (orig.hasOwnProperty(prop)) {
                     v = orig[prop];
-                    if (v instanceof Object) { //could be an array or an object;
-                        o[prop] = arguments.callee(v);
+
+                    // Could be an array or an object.
+                    if (v instanceof Object) {
+                        o[prop] = Pete.deepCopy(v);
                     } else {
                       o[prop] = v;
                     }
