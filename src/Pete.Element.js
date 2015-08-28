@@ -7,7 +7,7 @@
  *
  */
 
-"use strict";
+'use strict';
 
 /**
 * @function Element
@@ -156,7 +156,8 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
         //<source>
         before: function (elem) {
             // TODO: what is oTargetElement?
-            this.dom.parentNode.insertBefore(Pete.Element.get(elem, true), oTargetElement);
+            //this.dom.parentNode.insertBefore(Pete.Element.get(elem, true), oTargetElement);
+            this.dom.parentNode.insertBefore(Pete.Element.get(elem, true));
 
             return this;
         },
@@ -170,7 +171,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
     <p><a href="http://jslite.benjamintoll.com/examples/closest.php" rel="external">See an example</a></p>
          */
         //<source>
-        closest: function (elem, context) {
+        closest: function (elem) {
             var parent = this.dom.parentNode;
 
             while (parent && parent.nodeName) {
@@ -263,7 +264,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
             //  or
             //      id: 'Pete'
             if (id) {
-                dom.id = id
+                dom.id = id;
             }
 
             if (obj.attr) {
@@ -482,7 +483,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
 
             return function (el) {
                 if (!flyweight[symbol]) {
-                  flyweight[symbol] = Pete.compose(Pete.Element);
+                    flyweight[symbol] = Pete.compose(Pete.Element);
                 }
 
                 flyweight[symbol].dom = Pete.get(el, true);
@@ -522,8 +523,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
         */
         //<source>
         getStyle: function (name) {
-            var me = this,
-                dom = this.dom,
+            var dom = this.dom,
                 obj;
 
             // If the property exists in style[] then it's been set recently and is current.
@@ -578,8 +578,8 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
          */
         //<source>
         hasClass: function (cls) {
-          return cls &&
-              (' ' + this.dom.className + ' ').indexOf(' ' + cls + ' ') > -1;
+            return cls &&
+                (' ' + this.dom.className + ' ').indexOf(' ' + cls + ' ') > -1;
         },
         //</source>
 
@@ -814,7 +814,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
 
             scope = scope || this;
 
-            if (typeof type === "string") {
+            if (typeof type === 'string') {
                 type = [type];
             }
 
@@ -870,22 +870,22 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
             var fnReturnElement = function () {
                 return returnDOM ?
                     parent :
-                    Pete.Element.get(parent)
+                    Pete.Element.get(parent);
             },
-            parent = Pete.Element.get(this, true).parentNode;
+                parent = Pete.Element.get(this, true).parentNode;
 
             if (!parent) {
-                throw new Error("Parent could not be found");
+                throw new Error('Parent could not be found');
             }
 
-            if (elem && typeof elem === "boolean") {
+            if (elem && typeof elem === 'boolean') {
                 returnDOM = elem;
                 elem = undefined;
             }
 
             //return parent.nodeType === 1 ? parent : arguments.callee.call(parent);
             if (parent.nodeType === 1) {
-                if (elem && typeof elem !== "boolean") {
+                if (elem && typeof elem !== 'boolean') {
                     // A specific parent nodeName was passed in and the parent hasn't found it yet so keep recursing.
                     if (parent.nodeName.toLocaleLowerCase() !== elem) {
                          // This has to return the final value since it's recursive and we could be dealing with many
@@ -912,7 +912,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
          */
         //<source>
         previous: function (elem, returnDOM) {
-            if (elem && typeof elem === "boolean") {
+            if (elem && typeof elem === 'boolean') {
                 returnDOM = elem;
                 elem = undefined;
             }
@@ -920,7 +920,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
             var prev = Pete.Element.get(this, true).previousSibling;
 
             if (!prev) {
-                throw new Error("Previous sibling could not be found");
+                throw new Error('Previous sibling could not be found');
             }
 
             return prev.nodeType === 1 ?
@@ -1031,7 +1031,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
             var arr = [];
 
             Pete.Element.formElements(this).forEach(function (o) {
-                var i, opts;
+                var i, len, opts;
 
                 outerLoop:
                 switch (o.nodeName.toLocaleLowerCase()) {
@@ -1464,7 +1464,7 @@ Pete.Element = Pete.compose(Pete.Observer, (function () {
             };
 
             return function (el, root, returnDOM) {
-                var n, el, id, dom;
+                var id, dom;
 
                 if (root && typeof root === 'boolean') {
                     returnDOM = root;

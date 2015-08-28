@@ -23,7 +23,7 @@
  *
  */
 
-"use strict";
+'use strict';
 
 Pete.defer = Pete.compose(Pete.ajax, {
     /**
@@ -53,19 +53,19 @@ Pete.defer = Pete.compose(Pete.ajax, {
 
     data: {},
 
-    doCallbacks: function (request) {
+    doCallbacks: function () {
         var me = this,
             callbacks, callback;
 
         // Note that request will refer to the last returned request.
         //if (me.fire('completed', me, request) !== false) {
-            callbacks = me.callbacks;
-            while (callbacks.length) {
-                callback = callbacks.shift();
-                //if (me.fire('beforecallback', callback, me, request) !== false) {
-                    callback.call(me, me.data);
-                //}
-            }
+        callbacks = me.callbacks;
+        while (callbacks.length) {
+            callback = callbacks.shift();
+            //if (me.fire('beforecallback', callback, me, request) !== false) {
+            callback.call(me, me.data);
+            //}
+        }
         //} else {
             //me.clear();
         //}
@@ -102,10 +102,10 @@ Pete.defer = Pete.compose(Pete.ajax, {
      * @return {Object} The response
      */
     onComplete: function (response, request, success, xhr) {
-        var me = this,
-            i = 0,
-            result, success, response,
-            len, callbacks, callback;
+        var me = this;//,
+//            i = 0,
+//            result, success, response,
+//            len, callbacks, callback;
 
         /*
         try {

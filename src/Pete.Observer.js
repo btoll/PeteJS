@@ -7,7 +7,7 @@
  *
  */
 
-"use strict";
+'use strict';
 
 /**
  * @function Observer
@@ -45,7 +45,7 @@ var Person = function (name) {
             me.events = {};
         }
 
-        if (typeof v === "string") {
+        if (typeof v === 'string') {
             for (i = 0, args = arguments; args[i]; i++) {
                 if (!this.events[args[i]]) {
                     this.events[args[i]] = [];

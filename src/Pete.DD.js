@@ -7,13 +7,11 @@
 // dropZone = el can only be a dropzone, it cannot initiate drags
 //
 // If a dragCls is not explicitly defined then any dom element can be a drag target.
-"use strict";
+'use strict';
 
 Pete.DD = (function () {
-    var i = 0,
-        dragZones = {},
+    var dragZones = {},
         dropZones = {},
-        len,
         // The cloned dom element.
         dragProxy,
         // The original dom element that has been selected to be dragged.
@@ -25,8 +23,6 @@ Pete.DD = (function () {
         var me = this,
             els = [],
             data = cfg.data,
-            doc = Pete.get(document),
-            body = document.body,
             ev, subscribe;
 
         if (!(v instanceof Array)) {
@@ -42,8 +38,8 @@ Pete.DD = (function () {
 
                 // Let the Observer know what events can be subscribed to.
                 zone.subscriberEvents([
-                  'beforenodedrop',
-                  'afternodedrop'
+                    'beforenodedrop',
+                    'afternodedrop'
                 ]);
 
                 if (data.subscribe) {
@@ -115,7 +111,6 @@ Pete.DD = (function () {
             dragZone = dragZones[ownerId],
             doc = Pete.get(document),
             body = document.body,
-            dragElFound = false,
             // `dd` is the current DD object.
             dragCls = dd.dragCls;
 
@@ -170,7 +165,7 @@ Pete.DD = (function () {
 
     // NOTE: It's very important to listen to this event so onNodeDrop knows when it can remove
     // the cloned node and when to remove the class when the node is over a no-drop area.
-    function onMouseOut(e) {
+    function onMouseOut() {
         if (dragProxy) {
             dropZoneTarget = null;
             Pete.fly(dragProxy).removeClass('Pete_overDropZone');
@@ -192,7 +187,7 @@ Pete.DD = (function () {
         }
     }
 
-    function onNodeDrop(e) {
+    function onNodeDrop() {
         var doc = Pete.get(document),
             body = document.body,
             zoneTarget, o, el;
@@ -262,8 +257,8 @@ Pete.DD = (function () {
             // Should there be a better check?
             return (typeof v.sortOrder === 'number');
         }),
-        frag = document.createDocumentFragment(),
-        dz = Pete.get(dropZone);
+            frag = document.createDocumentFragment(),
+            dz = Pete.get(dropZone);
 
         // Sort all nodes in this drop zone by their sort order property.
         arr.sort(function (a, b) {

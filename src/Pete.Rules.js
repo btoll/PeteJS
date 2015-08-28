@@ -7,7 +7,7 @@
  *
  */
 
-"use strict";
+'use strict';
 
 /**
  * @function Rules
@@ -28,27 +28,27 @@ For instance, to set an "alpha" rule, the form element should look like the foll
 //<source>
 Pete.Rules = (function () {
     var rules = {
-          email: {
-              re: "^[_a-z0-9-]+(\\.[_a-z0-9-]+)*@[a-z0-9-]+(\\.[a-z0-9-]+)*(\\.[a-z]{2,3})$",
-              //re: "^[\w-]+(\\.[\w-]+)*@[a-z0-9-]+(\\.[\w-]+)*(\\.[a-z]{2,3})$",
-              message: "Must be a valid email address."
-          },
-          phone: {
-              re: "^1?\\(?(\\d{3})\\)?\\s?(\\d{3})-?(\\d{4})$",
-              mask: "({1}) {2}-{3}",
-              message: "Can only contain numbers, parenthesis, spaces and a dash."
-          },
-          ssn: {
-              re: "^(\\d{3})(?:[-\\s]?)(\\d{2})(?:[-\\s]?)(\\d{4})$",
-              mask: "{1}-{2}-{3}",
-              message: "Can only contain numbers separated by a dash or a space."
-          },
-          zip: {
-              re: "^([0-9]{5})(?:[-\\s]?)([0-9]{4})?$",
-              mask: "{1}-{2}",
-              message: "Can only contain numbers and a dash."
-          }
-      };
+        email: {
+            re: '^[_a-z0-9-]+(\\.[_a-z0-9-]+)*@[a-z0-9-]+(\\.[a-z0-9-]+)*(\\.[a-z]{2,3})$',
+            //re: "^[\w-]+(\\.[\w-]+)*@[a-z0-9-]+(\\.[\w-]+)*(\\.[a-z]{2,3})$",
+            message: 'Must be a valid email address.'
+        },
+        phone: {
+            re: '^1?\\(?(\\d{3})\\)?\\s?(\\d{3})-?(\\d{4})$',
+            mask: '({1}) {2}-{3}',
+            message: 'Can only contain numbers, parenthesis, spaces and a dash.'
+        },
+        ssn: {
+            re: '^(\\d{3})(?:[-\\s]?)(\\d{2})(?:[-\\s]?)(\\d{4})$',
+            mask: '{1}-{2}-{3}',
+            message: 'Can only contain numbers separated by a dash or a space.'
+        },
+        zip: {
+            re: '^([0-9]{5})(?:[-\\s]?)([0-9]{4})?$',
+            mask: '{1}-{2}',
+            message: 'Can only contain numbers and a dash.'
+        }
+    };
 
     return {
         getRule: function (name) {

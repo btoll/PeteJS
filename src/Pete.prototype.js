@@ -7,7 +7,7 @@
  *
  */
 
-"use strict";
+'use strict';
 
 /**
  * @function Array.prototype.contains
@@ -73,7 +73,7 @@ if (!Array.prototype.filter) {
         var t = Object(this);
         var len = t.length >>> 0;
 
-        if (typeof callback !== "function") {
+        if (typeof callback !== 'function') {
             throw new TypeError();
         }
 
@@ -125,7 +125,7 @@ if (!Array.prototype.forEach) {
  */
 //<source>
 if (!Array.prototype.indexOf) {
-    Array.prototype.indexOf = function (item, fromIndex) {
+    Array.prototype.indexOf = function (item) {
         var i = 0,
             len;
 
@@ -165,7 +165,7 @@ if (!Array.prototype.indexOf) {
  */
 //<source>
 if (!Array.prototype.lastIndexOf) {
-    Array.prototype.lastIndexOf = function (item, fromIndex) {
+    Array.prototype.lastIndexOf = function (item) {
         var i = this.length,
             j;
 
@@ -449,8 +449,7 @@ Function.prototype.overload = function (obj, sName) {
     // obj == the class within which the method is invoked;
     // this == refers to the anonymous function which the overload method is a method of;
     // old == refers to the old method (could be null);
-    var me = this,
-        old = obj[sName];
+    var old = obj[sName];
 
     // I first tried this.args as an array with the Array.push method but ie7 didn't like it.
     if (!obj.args) {
@@ -464,8 +463,8 @@ Function.prototype.overload = function (obj, sName) {
         var args = arguments;
 
         if (obj.args[args.length]) {
-            if (that.length === args.length) {
-                return that.apply(this, args);
+            if (this.length === args.length) {
+                return this.apply(this, args);
             } else if (typeof old === 'function') {
                 return old.apply(this, args);
             }

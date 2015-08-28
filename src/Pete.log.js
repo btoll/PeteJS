@@ -7,7 +7,7 @@
  *
  */
 
-"use strict";
+'use strict';
 
 // This is designed to behave like FF's console.log().
 
@@ -53,7 +53,6 @@ Pete.log = Pete.compose(Pete.Observer, (function () {
     // Mixin our singleton object with private stuff.
     var methods = {},
         systemLog = [],
-        args = [],
         logTypes = [],
         method,
 
@@ -117,7 +116,7 @@ Pete.log = Pete.compose(Pete.Observer, (function () {
                 logTypes.push(method);
 
                 Pete.log[method] = (function (method) {
-                    return function (type) {
+                    return function () {
                         // The state var is the crux; simply manage your object hash to determine how the method is called.
                         if (!methods[method]) {
                             logEvent('The ' + method + ' log type has been disabled.');

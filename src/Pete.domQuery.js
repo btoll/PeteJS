@@ -7,7 +7,7 @@
  *
  */
 
-"use strict";
+'use strict';
 
 /**
  * @function domQuery
@@ -149,7 +149,7 @@ Pete.domQuery = (function () {
             if (vRootElem) {
                 cElems = Pete.getDom(vRootElem).getElementsByTagName(sSearchByTag || '*');
             } else {
-                cElems = document.getElementsByTagName("*") || document.all;
+                cElems = document.getElementsByTagName('*') || document.all;
             }
 
             if (typeof vClassname !== 'string') {
@@ -238,7 +238,7 @@ Pete.domQuery = (function () {
                                     o.attr.filter[b] = vAttr[1];
                                     // ...and remove it from the end of the token.
                                     return a.slice(0, -1);
-                                })
+                                });
                             // Only get here if there're no attribute filters, else we'll get duplicate props i.e.,
                             // {class: 'foo', filter: { class: 'foo'}}.
                             } else {
@@ -397,8 +397,8 @@ Pete.domQuery = (function () {
         },
 
         fnReplenish = function (el, aChunks) {
-            //aChunks.length = 0;
-            aChunks = aChunksCache.concat();
+            aChunks.length = 0;
+            //aChunks = aChunksCache.concat();
         },
 
         fnSearch = function (sSelector, oRoot) {

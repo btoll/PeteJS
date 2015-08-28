@@ -7,7 +7,7 @@
  *
  */
 
-"use strict";
+'use strict';
 
 Pete.util = (function () {
     var reAddCommas = /(\d+)(\d{3})/,
@@ -70,7 +70,7 @@ Pete.util = (function () {
         //<source>
         capFirstLetter: function (str) {
             str = str.replace(reCapFirstLetter, function (a, b) {
-                return " " + b.toLocaleUpperCase();
+                return ' ' + b.toLocaleUpperCase();
             });
 
             return str.charAt(0).toLocaleUpperCase() + str.slice(1);
@@ -303,7 +303,7 @@ Pete.util = (function () {
         range: function (range) {
             var chunks = reRange.exec(range),
                 arr = [],
-                isNumeric = chunks[1] === "0" || !!Number(chunks[1]),
+                isNumeric = chunks[1] === '0' || !!Number(chunks[1]),
                 begin,
                 end,
                 i;
@@ -350,7 +350,7 @@ Pete.util = (function () {
         //<source>
         stripTags: function (str) {
             return str.replace(reStripTags, '');
-        }.assert(String),
+        }.assert(String)
         //</source>
 
         /*

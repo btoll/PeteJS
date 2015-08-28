@@ -1,4 +1,6 @@
-/*
+/*global ActiveXObject*/
+
+/**
  * PeteJS
  *
  * Copyright (c) 2009 - 2015 Benjamin Toll (benjamintoll.com)
@@ -7,7 +9,7 @@
  *
  */
 
-"use strict";
+'use strict';
 
 Pete.ajax = Pete.compose(Pete.Observer, (function () {
     /**
@@ -43,12 +45,12 @@ Pete.ajax = Pete.compose(Pete.Observer, (function () {
 
         getXHR = function () {
             var factory = [
-                function () { return new XMLHttpRequest(); },
-                function () { return new ActiveXObject('MSXML2.XMLHTTP.3.0'); },
-                function () { return new ActiveXObject('MSXML2.XMLHTTP'); },
-                function () { return new ActiveXObject('Microsoft.XMLHTTP'); }
-            ],
-            i, len;
+                    function () { return new XMLHttpRequest(); },
+                    function () { return new ActiveXObject('MSXML2.XMLHTTP.3.0'); },
+                    function () { return new ActiveXObject('MSXML2.XMLHTTP'); },
+                    function () { return new ActiveXObject('Microsoft.XMLHTTP'); }
+                ],
+                i, len;
 
             for (i = 0, len = factory.length; i < len; i++) {
                 try {
@@ -81,7 +83,9 @@ Pete.ajax = Pete.compose(Pete.Observer, (function () {
                     // Safari returns an empty status if the file has not been modifie.
                     Pete.isSafari && typeof r.status === 'undefined';
 
-            } catch (e) {}
+            } catch (e) {
+                throw e;
+            }
 
             // If checking the status failed then assume that the request failed.  return false;
         },

@@ -6,7 +6,7 @@
  * and GPL (GPL-LICENSE.txt) licenses.
  *
  */
-"use strict";
+'use strict';
 
 var Pete;
 
@@ -177,7 +177,7 @@ Pete.mixin(Pete, {
                     if (v instanceof Object) {
                         o[prop] = Pete.deepCopy(v);
                     } else {
-                      o[prop] = v;
+                        o[prop] = v;
                     }
                 }
             }
@@ -237,13 +237,15 @@ Pete.mixin(Pete, {
 
                 case 'disabled':
                     if (!Pete.isEmpty(Pete.disabled)) {
-                      Pete.disabled = {};
+                        Pete.disabled = {};
                     }
                     break;
 
+                /*
                 case 'flyweight':
                     flyweight = {};
                     break;
+                */
 
                 case 'garbage':
                     Pete.garbage = {};

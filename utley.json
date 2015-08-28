@@ -1,4 +1,8 @@
 {
+    "lint": [{
+        "run": "eslint src"
+    }],
+
     "css": [{
         "src": [
             "resources/css"

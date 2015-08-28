@@ -6,7 +6,7 @@
  * and GPL (GPL-LICENSE.txt) licenses.
  *
  */
-"use strict";
+'use strict';
 
 Pete.dom = {
     /**
@@ -56,8 +56,9 @@ Pete.dom = {
     //<source>
     cleanWhitespace: function (element) {
         var args = arguments,
-            element = (element && Pete.getDom(element)) || document,
             x, len, i, childNode;
+
+        element = (element && Pete.getDom(element)) || document;
 
         for (x = 0, len = element.childNodes.length; x < len; x++) {
             childNode = element.childNodes[x];
@@ -99,7 +100,7 @@ Pete.dom = {
                 }
             }
 
-            return -1
+            return -1;
         };
 
         var _removeAllHandlers = function () {
@@ -107,7 +108,7 @@ Pete.dom = {
             for (var id in w._allHandlers) {
                 if (w._allHandlers.hasOwnProperty(id)) {
                     var h = w._allHandlers[id];
-                    h.element.detachEvent("on" + h.eventType, h.wrappedHandler);
+                    h.element.detachEvent('on' + h.eventType, h.wrappedHandler);
                     delete w._allHandlers[id];
                 }
             }
@@ -115,7 +116,7 @@ Pete.dom = {
 
         var _uid = (function () {
             var _counter = 0;
-            return function () { return "h" + _counter++; };
+            return function () { return 'h' + _counter++; };
         }());
 
         return {
@@ -160,7 +161,7 @@ Pete.dom = {
                         }
                     };
 
-                    element.attachEvent("on" + eventType, wrappedHandler);
+                    element.attachEvent('on' + eventType, wrappedHandler);
 
                     var h = {
                         element: element,
@@ -188,7 +189,7 @@ Pete.dom = {
 
                     if (!w._onunloadHandlerRegistered) {
                         w._onunloadHandlerRegistered = true;
-                        w.attachEvent("onunload", _removeAllHandlers);
+                        w.attachEvent('onunload', _removeAllHandlers);
                     }
                 }
             },
@@ -353,6 +354,9 @@ Pete.dom = {
                     return elem.firstChild;
                 }
 
+                // The following return statement is so eslint doesn't complain!
+                return;
+
             case 'beforeend':
                 if (elem.lastChild) {
                     range.setStartAfter(elem.lastChild);
@@ -364,6 +368,9 @@ Pete.dom = {
                     elem.innerHTML = html;
                     return elem.lastChild;
                 }
+
+                // The following return statement is so eslint doesn't complain!
+                return;
 
             case 'afterend':
                 range.setStartAfter(elem);
@@ -440,9 +447,12 @@ var aElems = Pete.dom.remove(['test', 'anotherTest', 'oneMore']);
 
     //<source>
     removeChildren: function (kids) {
+        // TODO: elem???
+        var i, len, elem;
+
         // Kids can either be an array (remove multiple nodes at once) or an object or a string (only remove one node).
         if (kids.constructor === Array) {
-            for (var i = 0, len = kids.length; i < len; i++) {
+            for (i = 0, len = kids.length; i < len; i++) {
                 Pete.getDom(kids[i]).parentNode.removeChild(elem);
             }
         } else {
@@ -466,11 +476,11 @@ var aElems = Pete.dom.remove(['test', 'anotherTest', 'oneMore']);
             if (links[i].getAttribute('rel') &&
                 links[i].getAttribute('rel') === 'external' ||
                 links[i].getAttribute('rel') === 'pdf') {
-                    links[i].onclick = function() {
-                        child = window.open(this.getAttribute('href'));
-                        return !child ? true /*failed to open so follow link*/:
-                            false; /*success, open new browser window*/
-                    };
+                links[i].onclick = function() {
+                    child = window.open(this.getAttribute('href'));
+                    return !child ? true /*failed to open so follow link*/:
+                        false; /*success, open new browser window*/
+                };
             }
         }
     }

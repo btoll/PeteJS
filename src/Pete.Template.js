@@ -7,7 +7,7 @@
  *
  */
 
-"use strict";
+'use strict';
 
 /**
  * @function Template
@@ -61,12 +61,14 @@ Pete.Template = {
         return this.html.replace(this.re, function (a, b) {
             return values[b];
         });
-    },
+    }//,
     //</source>
 
     //<source>
+    /*
     init: function (html) {
     }
+    */
     //</source>
 };
 
