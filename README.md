@@ -1,4 +1,4 @@
-Pete is all of the following things.
+#### Pete is all of the following things.
 
 + A dog.
 
@@ -6,11 +6,14 @@ Pete is all of the following things.
 
 + A composable JavaScript library.
 
-What browsers are supported?
+#### What browsers are supported?
 + Chrome, Firefox, Safari, Opera 12+ and IE 8+.
 
-What is the license?
+#### What is the license?
 + Pete is [free][wtfpl].
 
 [wtfpl]: http://www.wtfpl.net/
+
+View the [docs].
+[docs]: http://pete.theowlsnestfarm.com/
 
