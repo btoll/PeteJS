@@ -1,4 +1,4 @@
-/*
+/**
  * PeteJS
  *
  * Copyright (c) 2009 - 2015 Benjamin Toll (benjamintoll.com)
@@ -221,14 +221,14 @@ Pete.ready(function () {
                     },
 
                     getJSDoc = function (innerHTML) {
-                        var v, p;
+                        var v;
 
                         try {
                             v = Pete.getDom(innerHTML).jsdoc;
                             // If we get here try to access an object property (remember if Pete.getDom(innerHTML) resolves to an actual
                             // HTMLElement but does not have a jsdoc property we could still get here b/c 'undefined' wouldn't
                             // throw an error, but trying to access a property on the undefined data type would throw an error).
-                            p = v.chunk;
+                            //p = v.chunk;
                         } catch (e) {
                             v = Pete.getDom(howMany(innerHTML)).jsdoc;
                         }
@@ -479,47 +479,47 @@ Pete.ready(function () {
                 Pete.getDom(namespace).appendChild(fragment);
             },
 
-            initTabs = function (oClasses) {
-                var hookup = function (e) {
-                    var target = e.target;
-                    // IE6 doesn't support HTMLElement.hasAttribute().
-                    //if (target.nodeName.toLocaleLowerCase() === 'a' && target['rel']) {
-
-                    // IE6 doesn't support HTMLElement.hasAttribute().
-                    if (target.nodeName.toLocaleLowerCase() === 'a' && target.getAttribute('rel')) {
-                        if (target.parentNode.id === 'selected') {
-                            return false;
-                        }
-
-                        Pete.Element.gets('.' + Pete.tabClasses.tabs, true).forEach(function (div) {
-                            Pete.makeArray(div.getElementsByTagName('li')).forEach(function (o) {
-                                // Remove every id to make sure that 'selected' is assigned to the correct element.
-                                o.id = '';
-                            });
-                        });
-
-                        target.parentNode.id = 'selected';
-
-                        Pete.Element.gets('div.' + Pete.tabClasses.tab, true).forEach(function (div) {
-                            var o = Pete.Element.fly(div);
-
-                            if (o.dom.id === target.rel) {
-                                o.removeClass('hide');
-                            } else if (!o.hasClass('hide')) {
-                                o.addClass('hide');
-                            }
-                        });
-                    }
-                    e.preventDefault();
-                },
-                oDiv = Pete.Element.gets("." + Pete.tabClasses.tabs);
-
-                // Use event delegation.
-                oDiv.on('click', hookup);
-            },
+//            initTabs = function () {
+//                var hookup = function (e) {
+//                    var target = e.target;
+//                    // IE6 doesn't support HTMLElement.hasAttribute().
+//                    //if (target.nodeName.toLocaleLowerCase() === 'a' && target['rel']) {
+//
+//                    // IE6 doesn't support HTMLElement.hasAttribute().
+//                    if (target.nodeName.toLocaleLowerCase() === 'a' && target.getAttribute('rel')) {
+//                        if (target.parentNode.id === 'selected') {
+//                            return false;
+//                        }
+//
+//                        Pete.Element.gets('.' + Pete.tabClasses.tabs, true).forEach(function (div) {
+//                            Pete.makeArray(div.getElementsByTagName('li')).forEach(function (o) {
+//                                // Remove every id to make sure that 'selected' is assigned to the correct element.
+//                                o.id = '';
+//                            });
+//                        });
+//
+//                        target.parentNode.id = 'selected';
+//
+//                        Pete.Element.gets('div.' + Pete.tabClasses.tab, true).forEach(function (div) {
+//                            var o = Pete.Element.fly(div);
+//
+//                            if (o.dom.id === target.rel) {
+//                                o.removeClass('hide');
+//                            } else if (!o.hasClass('hide')) {
+//                                o.addClass('hide');
+//                            }
+//                        });
+//                    }
+//                    e.preventDefault();
+//                },
+//                    oDiv = Pete.Element.gets('.' + Pete.tabClasses.tabs);
+//
+//                // Use event delegation.
+//                oDiv.on('click', hookup);
+//            },
 
             scripts = document.getElementsByTagName('script'),
-                i, len;
+            i, len;
             // End variable declaration block.
 
         for (i = 0, len = scripts.length; i < len; i++) (function (script) {
@@ -534,9 +534,8 @@ Pete.ready(function () {
                     url: url,
                     success: function (sResponse) {
                         var x,
-                            //var re = /\/\*\*(?:\n|\r\n){1}(.|\n|\r\n)*?<\/source>/g; //matches /** ... </source>;
                             // Matches /** ... </source>,
-                            re = /\/\*\*(?:\r\n){1}(.|\r\n)*?<\/source>/g,
+                            re = /\/\*\*(?:\n|\r\n){1}(.|\n|\r\n)*?<\/source>/g,
                             // Store each match.
                             chunks = [],
                             i, len, chunk, source, getChunks, rePattern;
@@ -551,13 +550,11 @@ Pete.ready(function () {
 
                         for (i = 0, len = chunks.length; i < len; i++) {
                             chunk = chunks[i];
-                            //source = chunk.match(/<source>((.|\n|\r\n)*)\/\/<\/source>/)[1];
                             // Get the source code.
-                            source = chunk.match(/<source>((.|\r\n)*)\/\/<\/source>/)[1];
+                            source = chunk.match(/<source>((.|\n|\r\n)*)\/\/<\/source>/)[1];
                             getChunks = [];
                             if (new RegExp('@' + keywords.join('|')).test(chunk)) {
-                                //var rePattern = new RegExp('@(' + keywords.join('|') + ')\\s*(?:{(.*?)})?(?:\\s*\\b(\[a-zA-Z\.]*)\\b\\s*)?((.|\\n|\\r\\n)*?)\\*', 'g');
-                                rePattern = new RegExp('@(' + keywords.join('|') + ')\\s*(?:{(.*?)})?(?:\\s*\\b(\[a-zA-Z0-9\.$]*)\\b\\s*)?((.|\\r\\n)*?)\\*', 'g');
+                                rePattern = new RegExp('@(' + keywords.join('|') + ')\\s*(?:{(.*?)})?(?:\\s*\\b(\[a-zA-Z0-9\.$]*)\\b\\s*)?((.|\\n|\\r\\n)*?)\\*', 'g');
 
                                 // Extract each keyword's stuff.
                                 while ((x = rePattern.exec(chunk))) {
@@ -581,7 +578,7 @@ Pete.ready(function () {
         }(scripts[i]));
 
         setTimeout(function () {
-            initTabs();
+            //initTabs();
             Pete.dom.targetBlank();
             Pete.Element.fly('searchForm').on('submit', search);
 
