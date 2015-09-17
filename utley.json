@@ -1,29 +1,9 @@
 {
-    "build": [
-        "#clean",
-        "#lint",
-        "#css",
-        "#js"
-    ],
-
-    "clean": [{
-        "run": "rm -rf build"
-    }],
-
-    "docs": [{
-        "run": "sh build_docs.sh"
-    }],
-
-    "lint": [{
-        "run": "eslint src"
-    }],
-
     "css": [{
         "src": [
             "resources/css"
         ],
-        "output": "build/pete.css",
-        "version": "1.0.0"
+        "output": "build/pete.css"
     }],
 
     "js": [{
@@ -31,7 +11,6 @@
             "src"
         ],
         "output": "build/pete.js",
-        "version": "1.0.0",
         "dependencies": [
             "Pete.prototype.js",
             "Pete.js",
@@ -39,6 +18,19 @@
             "Pete.Element.js",
             "Pete.Composite.js"
         ]
-    }]
+    }],
+
+    "tasks": {
+        "clean": "rm -rf build",
+        "docs": "sh build_docs.sh",
+        "lint": "eslint src"
+    },
+
+    "build": [
+        "#clean",
+        "#lint",
+        "css",
+        "js"
+    ]
 }
 
