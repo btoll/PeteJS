@@ -808,12 +808,15 @@
             cLinks.on(["click", "mouseover"], func); //pass multiple event to listen to as an array;
              */
             //<source>
-            on: function (type, fn, scope/*varargs*/) {
+            on: function (type, fn, scope) {
                 var dom = this.dom,
                     id = dom.id || dom._pete.ownerId,
                     args = Array.prototype.slice.call(arguments, 3);
 
                 scope = scope || this;
+
+                // Explicitly bind the handler's scope.
+                fn = fn.bind(scope);
 
                 if (typeof type === 'string') {
                     type = [type];
@@ -821,10 +824,7 @@
 
                 type.forEach(function (type) {
                     // Push the scope onto the front of the stack so it's the first.
-                    args.unshift(scope);
-                    fn = fn.bind.apply(fn, args);
-
-                    Pete.dom.event.add(dom, type, fn);
+                    Pete.dom.event.add(dom, type, fn, args);
 
                     // Create the object for each id.
                     var o = null,

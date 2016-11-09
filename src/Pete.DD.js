@@ -157,8 +157,8 @@
             if (dragProxy) {
                 dragProxy.setStyle({
                     display: 'block',
-                    //top: Pete.util.getY(e) + 20 + 'px',
-                    //left: Pete.util.getX(e) + 10 + 'px'
+                    // top: Pete.util.getY(e) + 20 + 'px',
+                    // left: Pete.util.getX(e) + 10 + 'px'
                     top: Pete.util.getY(e) + 'px',
                     left: Pete.util.getX(e) + 'px'
                 });
@@ -200,7 +200,7 @@
 
             // If dropZoneTarget is not null (from a no-drop area) or within the same drop zone.
             if (dropZoneTarget && dropZoneTarget.indexOf(sourceEl.ddOwner) === -1) {
-                //zoneTarget = Pete.getDom(dropZoneTarget);
+                // zoneTarget = Pete.getDom(dropZoneTarget);
                 zoneTarget = Pete.get(dropZoneTarget, true);
                 o = dropZones[dropZoneTarget];
 

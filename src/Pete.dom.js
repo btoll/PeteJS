@@ -118,13 +118,17 @@
 
             var _uid = (function () {
                 var _counter = 0;
-                return function () { return 'h' + _counter++; };
+                return function () {
+                    return 'h' + _counter++;
+                };
             }());
 
             return {
-                add: function (element, eventType, handler) {
+                add: function (element, eventType, handler, args) {
                     if (document.addEventListener) {
-                        element.addEventListener(eventType, handler, false);
+                        element.addEventListener(eventType, function (e) {
+                            handler.apply(handler, [e].concat(args));
+                        }, false);
                     } else if (document.attachEvent) {
                         if (_find(element, eventType, handler) !== -1) {
                             return;
@@ -150,8 +154,12 @@
                                 shiftKey: e.shiftKey, charCode: e.charCode,
                                 keyCode: e.keyCode,
 
-                                stopPropagation: function () { this._event.cancelBubble = true; },
-                                preventDefault: function () { this._event.returnValue = false; }
+                                stopPropagation: function () {
+                                    this._event.cancelBubble = true;
+                                },
+                                preventDefault: function () {
+                                    this._event.returnValue = false;
+                                }
                             };
 
                             if (Function.prototype.call) {
