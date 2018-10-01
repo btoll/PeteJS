@@ -1,4 +1,4 @@
-#### Pete is all of the following things.
+## Pete is all of the following things.
 
 + A dog.
 
@@ -6,14 +6,24 @@
 
 + A composable JavaScript library.
 
-#### What browsers are supported?
-+ Chrome, Firefox, Safari, Opera 12+ and IE 8+.
+## Modules
 
-#### What is the license?
-+ Pete is [free][wtfpl].
++ [Core]
++ [DOM]
++ [Drag and Drop]
 
-[wtfpl]: http://www.wtfpl.net/
+## What browsers are supported?
++ Chrome, Firefox, Safari, Opera 12+ and IE 9+.
 
-View the [docs].
-[docs]: http://pete.theowlsnestfarm.com/
+## License
+
+[GPLv3](COPYING)
+
+## Author
+
+Benjamin Toll
+
+[Core]: https://github.com/btoll/pete-core
+[DOM]: https://github.com/btoll/pete-dom
+[Drag and Drop]: https://github.com/btoll/pete-dd
 
